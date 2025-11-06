@@ -1,8 +1,31 @@
-# Ignore Python cache and virtual environments
+# Bytecode / build
 __pycache__/
-*.pyc
-.venv/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.so
+
+# VSCode / IDE
 .vscode/
-data/output/
-.notebooks/
-**/.ipynb_checkpoints/
+.idea/
+*.code-workspace
+
+# Output and test data
+outputs*/
+results*/
+*.png
+*.jpg
+*.npy
+*.csv
+
+# Python environment
+.venv/
+venv/
+env/
+*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
