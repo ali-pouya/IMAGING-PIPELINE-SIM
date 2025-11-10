@@ -32,7 +32,7 @@ REFERENCES (short list)
 • Oppenheim & Schafer — Discrete-Time Signal Processing (FFT/windowing basics).
 • Goodman — Introduction to Fourier Optics (OTF/MTF background).
 
-© 2025 Ava — Imaging Pipeline (classic edition)
+© 2025 Ali Pouya — Imaging Pipeline (classic edition)
 """
 
 from __future__ import annotations

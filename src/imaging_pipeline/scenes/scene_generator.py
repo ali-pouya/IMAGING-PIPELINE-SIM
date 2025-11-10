@@ -20,7 +20,7 @@ REFERENCES (short list)
 • Burns, P. D. (2000). Slanted-edge MTF for digital camera and scanner analysis.
 • Siemens star usage is widespread in camera QA; see vendor app notes (Imatest, etc.).
 
-© 2025 Ava — Imaging Pipeline (classic edition)
+© 2025 Ali Pouya — Imaging Pipeline (classic edition)
 """
 
 from __future__ import annotations
