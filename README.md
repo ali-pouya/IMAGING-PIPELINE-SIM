@@ -893,11 +893,45 @@ python src/main.py --scene slanted_edge --sigma 0.7
 Distributed under the MIT License.
 
 
-<h2 id="author" align="left">👤 Author</h2>
+<h2 id="author" align="left">👤 Ali Pouya</h2>
 
-### **Ali Pouya**  
-Optical Engineer — Optics &amp; Metrology System Design\
+Optical Engineer — Optics &amp; Metrology System Design.\
 GitHub: https://github.com/ali-pouya
+
+---
+
+<h2 id="references" align="left">📚 References</h2>
+
+
+#### Optics & Fourier Theory
+- **Goodman, J. W. (2017). _Introduction to Fourier Optics_ (4th ed.).**  
+  Foundational reference for PSF/OTF/MTF relationships, convolution, Gaussian PSF, Fourier-domain behavior.
+
+- **Born, M., & Wolf, E. (1999). _Principles of Optics_ (7th ed.).**  
+  Diffraction theory, Airy pattern, pupil function, Fourier propagation.
+
+- **Smith, W. J. (2007). _Modern Optical Engineering_ (4th ed.).**  
+  System blur approximations, f/# relations, Gaussian surrogates.
+
+
+#### ISO Standards & MTF Measurement
+- **ISO 12233:2017. _Electronic still picture imaging — Resolution measurements / SFR (Slanted-edge method)._**  
+  Reference for ESF → LSF → MTF pipeline, pixel-aperture MTF, frequency conventions.
+
+- **Burns, P. D. (2000). “Slanted-edge MTF for digital camera and scanner analysis.”**  
+  Primary description of practical slanted-edge MTF processing.
+
+- **General Siemens star usage (Imatest, vendor app notes).**  
+  Radial spatial-frequency targets for qualitative MTF/aliasing visualization.
+
+
+#### Sensor Modeling, Noise, and Electronics
+- **Janesick, J. R. (2007). _Photon Transfer: DN → λ_. SPIE Press.**  
+  Photon shot noise, read noise, full-well capacity, conversion gain, and SNR behaviors used in the sensor section.
+
+- **Holst, G. C. (2011). _CMOS/CCD Sensors and Camera Systems_ (2nd ed.). SPIE Press.**  
+  Sensor architecture, PRNU/DSNU, dark current, pixel-aperture and sampling considerations.
+
 
 
 <hr style="border:0.5px solid #ccc; margin:40px 0;">
