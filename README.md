@@ -35,7 +35,7 @@ and provides a controlled environment for studying:
 - Point-spread–based optical degradation  
 - Sensor-level electron generation and noise processes  
 - Digital sampling, quantization, and pixel-aperture effects  
-- Spatial-resolution behavior expressed through PSF/OTF/MTF relationships  
+- Spatial-resolution behavior expressed via PSF–LSF–ESF–MTF relationships  
 
 The implementation emphasizes:
 
@@ -246,11 +246,11 @@ $$
 
 | Stage | Formula / Operation | Purpose |
 |-------|----------------------|---------|
-| Electron generation | $\N_e = I_{opt} A_{pix} t_{exp} QE$ | Convert irradiance to electrons |
-| Shot noise | $\N_e' \sim Poisson(N_e)$ | Photon arrival randomness |
-| Read noise | $\N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)$ | Electronic noise floor |
+| Electron generation | $N_e = I_{opt} A_{pix} t_{exp} QE$ | Convert irradiance to electrons |
+| Shot noise | $N_e' \sim Poisson(N_e)$ | Photon arrival randomness |
+| Read noise | $N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)$ | Electronic noise floor |
 | Pixel-aperture MTF | Spatial averaging (box filter) | Models finite pixel size |
-| Quantization | $\DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$ | ADC conversion |
+| Quantization | $DN =\mathrm{clip}\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$ | ADC conversion |
 | Saturation | clamp to FWC | Prevents overflow |
 
 ---
@@ -288,11 +288,6 @@ Analytic scenes provide controlled spatial frequencies and deterministic reprodu
 ---
 
 ## **4.2 Scene Types and Definitions**
-
-Below, each scene type is reorganized into a compact structure with:  
-- formula block  
-- properties  
-- applications  
 
 ### **4.2.1 Siemens Star**
 
@@ -368,7 +363,7 @@ where $\ p $ is the block period.
 
 ### **4.2.5 Gradient Patterns**
 A linear irradiance ramp such as:
-$$
+$$  
 S(x,y)=\frac{x}{W}
 \quad	{or}\quad
 S(x,y)=\frac{x+y}{H+W}
@@ -386,7 +381,7 @@ $$
 ### **4.2.6 Custom Scenes**
 
 > **Note**  
-> Any grayscale image can be mapped to $\[0,1]$ and used as a scene.
+> Any grayscale image can be mapped to $[0,1]$ and used as a scene.
 
 ---
 
@@ -407,7 +402,7 @@ $$
 | Requirement | Description |
 |-------------|-------------|
 | Output type | `float32` |
-| Range | $\[0,1]$ |
+| Range | $[0,1]$ |
 | Deterministic | yes |
 | Convolution-ready | edges continuous |
 | Pixel-aligned | spatially consistent |
@@ -418,7 +413,6 @@ $$
 <h1 id="optics-modeling-theory" align="center">🔬 5. Optics Modeling Theory</h1>
 
 Optical effects are simulated via convolution with a point spread function (PSF).  
----
 
 ## **5.1 Optical Transformation Framework**
 
@@ -429,7 +423,7 @@ $$
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
-| Energy normalized | $\\iint h(x,y)\,dx\,dy = 1$ |
+| Energy normalized | $\\\iint h(x,y)\,dx\,dy = 1$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
 
 ---
@@ -463,7 +457,7 @@ $$
 |----------|---------|
 | Closed-form MTF | easy validation |
 | Approx. optical blur | surrogate for real aberrations |
-| Controlled blur strength | via $\\sigma$ |
+| Controlled blur strength | via $\sigma$ |
 
 ---
 
@@ -490,7 +484,7 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
 \right]
 $$
 
-with $\u = f / f_{\mathrm{cutoff}}$.
+with $u = f / f_{\mathrm{cutoff}}$.
 
 
 ---
@@ -505,8 +499,8 @@ $$h_{\mathrm{airy}}(r)=\left[
 $$
 
 where  
-- $\J_1$ is the Bessel function of the first kind,  
-- $\k = \dfrac{\pi D}{\lambda f}$.
+- $J_1$ is the Bessel function of the first kind,  
+- $k = \dfrac{\pi D}{\lambda f}$.
 
 ### **Airy MTF**
 
@@ -546,7 +540,7 @@ A(
 \rho,\theta)
 \right)
 $$
-where $\A(\rho)$ describes aperture geometry.
+where $A(\rho)$ describes aperture geometry.
 
 The PSF follows from the Fourier transform relationship:
 
@@ -579,7 +573,7 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Component | Responsibility |
 |-----------|----------------|
 | PSF generator | Gaussian/defocus/Airy/Zernike |
-| Normalization | ensure $\\iint h=1$ |
+| Normalization | $\\\iint h=1$ |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
 
@@ -652,7 +646,7 @@ FWC defines the maximum number of electrons the photodiode can hold before satur
 
 ## **6.5 Pixel-Aperture MTF**
 Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function.  
-For a rectangular aperture of width $\p$:
+For a rectangular aperture of width $p$:
 
 $$
 MTF_{pixel}(f)=|\mathrm{sinc}(\pi f p)|
@@ -675,9 +669,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| $\CG$ | conversion gain |
-| $\BL$ | black level |
-| $\2^B-1$ | max DN, the output is clamped to the bit-depth interval |
+| $CG$ | conversion gain |
+| $BL$ | black level |
+| $2^B-1$ | max DN, the output is clamped to the bit-depth interval |
 
 
 ---
@@ -729,8 +723,6 @@ Although not a pixel-wise or frequency-dependent SNR measure, this metric provid
 
 The metrics module analyzes spatial resolution, spectral behavior, and noise performance.
 
-
----
 
 ## **7.1 Global SNR**
 
@@ -1022,7 +1014,7 @@ python src/main.py --scene slanted_edge --sigma 0.7
 
 - Imaging-chain parameter sweeps  
 - Virtual testing  
-- Visualization of system behavior  
+- Visualization of imaging system behavior  
 
 ---
 
