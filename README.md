@@ -170,8 +170,6 @@ The script performs:
 
 The simulator contains distinct modules directly corresponding to physical image-formation stages.
 
----
-
 ## **3.1 `main.py` — Primary Execution Path**
 
 ```
@@ -420,8 +418,6 @@ $$
 <h1 id="optics-modeling-theory" align="center">🔬 5. Optics Modeling Theory</h1>
 
 Optical effects are simulated via convolution with a point spread function (PSF).  
-This section retains all your original content but reorganizes structure for clarity.
-
 ---
 
 ## **5.1 Optical Transformation Framework**
@@ -449,7 +445,7 @@ $$h_{\mathrm{gauss}}(x,y)=
 $$
 
 where  
-- $\ \sigma $ is expressed in pixel units,  
+- $\\sigma$ is expressed in pixel units,  
 - kernel radius is selected to approximate infinite support.  
 
 Gaussian blur functions as a surrogate for aggregated optical effects such as small defocus, minor manufacturing deviations, and residual aberrations.
@@ -483,7 +479,7 @@ h_{\mathrm{defocus}}(r)=
 \end{cases}
 $$
 
-where the radius $\R$ relates to defocus distance and f-number.
+where the radius R relates to defocus distance and f-number.
 
 ### **Defocus MTF**
 
@@ -494,8 +490,7 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
 \right]
 $$
 
-with $\
-u = f / f_{\mathrm{cutoff}}$.
+with $\u = f / f_{\mathrm{cutoff}}$.
 
 
 ---
@@ -531,7 +526,7 @@ $$
 f_{\mathrm{cutoff}}=\frac{1}{\lambda N}
 $$
 
-with f-number $\N$.
+with f-number N.
 
 ---
 
@@ -551,8 +546,7 @@ A(
 \rho,\theta)
 \right)
 $$
-where $\A(
-\rho)$ describes aperture geometry.
+where $\A(\rho)$ describes aperture geometry.
 
 The PSF follows from the Fourier transform relationship:
 
@@ -612,9 +606,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| $\A_{pix}$ | pixel area |
-| $\t_{exp}$ | exposure time |
-| $\QE$ | quantum efficiency |
+| $A_{pix}$ | pixel area |
+| $t_{exp}$ | exposure time |
+| $QE$ | quantum efficiency |
 
 This expression assumes uniform pixel response and wavelength-independent QE unless otherwise extended.
 
