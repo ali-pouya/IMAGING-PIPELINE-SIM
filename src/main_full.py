@@ -29,6 +29,8 @@ EXTENDING LATER
 ---------------
 • Add other PSFs (defocus disk, astigmatism, coma kernels, etc.) and expose a
   --model switch. Keep this file light; put math in the modules.
+
+  © 2023 Ali Pouya — Imaging Pipeline Classic
 """
 
 from __future__ import annotations

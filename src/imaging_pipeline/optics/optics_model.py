@@ -34,7 +34,7 @@ REFERENCES (short list)
 • Smith, W. J. (2007). *Modern Optical Engineering* (4th ed.).
   (Rule-of-thumb system blur estimates from f/# and wavelength)
 
-© 2025 Ali Pouya — Imaging Pipeline (classic edition)
+© 2023 Ali Pouya — Imaging Pipeline (classic edition)
 """
 
 from __future__ import annotations
