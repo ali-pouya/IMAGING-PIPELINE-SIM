@@ -79,11 +79,11 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 
 Let:
 
-- \( S(x, y) \): scene irradiance in normalized units  
-- \( h(x, y) \): point spread function  
-- \( I_{\mathrm{opt}}(x, y) = (S * h)(x, y) \): optically blurred irradiance  
-- \( N_e(x, y) \): electron map  
-- \( DN(x, y) \): quantized digital output  
+- $$ S(x, y) $$: scene irradiance in normalized units  
+- $$ h(x, y) $$: point spread function  
+- $$ I_{\mathrm{opt}}(x, y) = (S * h)(x, y) $$: optically blurred irradiance  
+- $$ N_e(x, y) $$: electron map  
+- $$ DN(x, y) $$: quantized digital output  
 
 ---
 
@@ -91,29 +91,29 @@ Let:
 
 <br>
 
-\[
+$$
 I_{\mathrm{opt}}(x,y) = (S * h)(x,y)
-\]
+$$
 
-\[
+$$
 N_e = I_{\mathrm{opt}} \cdot A_{\mathrm{pix}} \cdot t_{\mathrm{exp}} \cdot QE
-\]
+$$
 
 Shot noise:
 
-\[
+$$
 N_e^{\prime} \sim \mathrm{Poisson}(N_e)
-\]
+$$
 
 Read noise:
 
-\[
+$$
 N_e^{\mathrm{noisy}} = N_e^{\prime} + \mathcal{N}(0, \sigma_r^2)
-\]
+$$
 
 Quantization:
 
-\[
+$$
 DN =
 \mathrm{clip}\!\left(
     \left\lfloor
@@ -121,7 +121,7 @@ DN =
     \right\rceil
     + BL,\ 0,\ 2^B - 1
 \right)
-\]
+$$
 
 <br>
 
@@ -270,16 +270,16 @@ Models supported:
 
 Gaussian PSF:
 
-\[
+$$
 h(x,y)=\frac{1}{2\pi\sigma^2}
 \exp\!\left(-\frac{x^2+y^2}{2\sigma^2}\right)
-\]
+$$
 
 MTF:
 
-\[
+$$
 \mathrm{MTF}_{\mathrm{gauss}}(f)=\exp[-2(\pi\sigma f)^2]
-\]
+$$
 
 ---
 
@@ -290,11 +290,11 @@ MTF:
 
 | Stage | Formula / Operation | Purpose |
 |-------|----------------------|---------|
-| Electron generation | \(N_e = I_{opt} A_{pix} t_{exp} QE\) | Convert irradiance to electrons |
-| Shot noise | \(N_e' \sim Poisson(N_e)\) | Photon arrival randomness |
-| Read noise | \(N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)\) | Electronic noise floor |
+| Electron generation | $$N_e = I_{opt} A_{pix} t_{exp} QE$$ | Convert irradiance to electrons |
+| Shot noise | $$N_e' \sim Poisson(N_e)$$ | Photon arrival randomness |
+| Read noise | $$N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)$$ | Electronic noise floor |
 | Pixel-aperture MTF | Spatial averaging (box filter) | Models finite pixel size |
-| Quantization | \(DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)\) | ADC conversion |
+| Quantization | $$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$$ | ADC conversion |
 | Saturation | clamp to FWC | Prevents overflow |
 
 ---
@@ -342,12 +342,12 @@ Below, each scene type is reorganized into a compact structure with:
 
 ### **4.2.1 Siemens Star**
 
-\[
+$$
 S(x,y)=\frac{1}{2}\left[1+\mathrm{sign}(\cos(N\theta))\right]
-\]
+$$
 <div align="center">
 
-where \( \theta = \mathrm{atan2}(y,x) \) and \( N \) is the number of radial spokes.
+where $$ \theta = \mathrm{atan2}(y,x) $$ and $$ N $$ is the number of radial spokes.
 
 </div>
 
@@ -361,15 +361,15 @@ where \( \theta = \mathrm{atan2}(y,x) \) and \( N \) is the number of radial spo
 
 ### **4.2.2 Slanted Edge**
 
-Binary transition rotated by angle \( theta \):
+Binary transition rotated by angle $$ theta $$:
 
-\[
+$$
 S(x,y)=
 \begin{cases}
 1,& x\cos\theta+y\sin\theta>0\\
 0,& x\cos\theta+y\sin\theta\le 0
 \end{cases}
-\]
+$$
 
 | Property | Meaning |
 |----------|---------|
@@ -381,16 +381,16 @@ S(x,y)=
 
 ### **4.2.3 Checkerboard**
 
-\[
+$$
 S(x,y)=
 \begin{cases}
 1,& \lfloor x/p \rfloor + \lfloor y/p \rfloor\ \text{even}\\
 0,& \text{otherwise}
 \end{cases}
-\] 
+$$ 
 <div align="center">
 
-where \( p \) is the block period.
+where $$ p $$ is the block period.
 
 </div>
 
@@ -414,11 +414,11 @@ where \( p \) is the block period.
 
 ### **4.2.5 Gradient Patterns**
 A linear irradiance ramp such as:
-\[
+$$
 S(x,y)=\frac{x}{W}
 \quad	{or}\quad
 S(x,y)=\frac{x+y}{H+W}
-\]
+$$
 
 
 | Property | Meaning |
@@ -432,7 +432,7 @@ S(x,y)=\frac{x+y}{H+W}
 ### **4.2.6 Custom Scenes**
 
 > **Note**  
-> Any grayscale image can be mapped to \([0,1]\) and used as a scene.
+> Any grayscale image can be mapped to $$[0,1]$$ and used as a scene.
 
 ---
 
@@ -453,7 +453,7 @@ S(x,y)=\frac{x+y}{H+W}
 | Requirement | Description |
 |-------------|-------------|
 | Output type | `float32` |
-| Range | \([0,1]\) |
+| Range | $$[0,1]$$ |
 | Deterministic | yes |
 | Convolution-ready | edges continuous |
 | Pixel-aligned | spatially consistent |
@@ -474,14 +474,14 @@ This section retains all your original content but reorganizes structure for cla
 
 ## **5.1 Optical Transformation Framework**
 
-\[
+$$
 I_{\mathrm{opt}}(x,y) = (S * h)(x,y)
-\]
+$$
 
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
-| Energy normalized | \(\iint h(x,y)\,dx\,dy = 1\) |
+| Energy normalized | $$\iint h(x,y)\,dx\,dy = 1$$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
 
 ---
@@ -490,14 +490,14 @@ I_{\mathrm{opt}}(x,y) = (S * h)(x,y)
 
 The simulator implements an energy-normalized Gaussian PSF:
 
-\[h_{\mathrm{gauss}}(x,y)=
+$$h_{\mathrm{gauss}}(x,y)=
 \frac{1}{2\pi\sigma^2}
 \exp\!\left( -\frac{x^2+y^2}{2\sigma^2} 
 \right)
-\]
+$$
 
 where  
-- \( \sigma \) is expressed in pixel units,  
+- $$ \sigma $$ is expressed in pixel units,  
 - kernel radius is selected to approximate infinite support.  
 
 Gaussian blur functions as a surrogate for aggregated optical effects such as small defocus, minor manufacturing deviations, and residual aberrations.
@@ -506,16 +506,16 @@ Gaussian blur functions as a surrogate for aggregated optical effects such as sm
 
 The corresponding modulation transfer function is:
 
-\[\mathrm{MTF}_{\mathrm{gauss}}(f)=
+$$\mathrm{MTF}_{\mathrm{gauss}}(f)=
 \exp\!\left( -2(\pi\sigma f)^2 
 \right)
-\]
+$$
 
 | Property | Meaning |
 |----------|---------|
 | Closed-form MTF | easy validation |
 | Approx. optical blur | surrogate for real aberrations |
-| Controlled blur strength | via \(\sigma\) |
+| Controlled blur strength | via $$\sigma$$ |
 
 ---
 
@@ -523,26 +523,26 @@ The corresponding modulation transfer function is:
 
 Geometric defocus produces a uniformly illuminated disk:
 
-\[h_{\mathrm{defocus}}(r)=
+$$h_{\mathrm{defocus}}(r)=
 \begin{cases}
 \dfrac{1}{\pi R^2}, & r \le R \
 0, & r > R
 \end{cases}
-\]
+$$
 
-where the radius \(R\) relates to defocus distance and f-number.
+where the radius $$R$$ relates to defocus distance and f-number.
 
 ### **Defocus MTF**
 
-\[\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
+$$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
 \dfrac{2}{\pi}
 \left[\arccos(\nu)-
 \nu\sqrt{1-\nu^2}
 \right]
-\]
+$$
 
-with \(
-u = f / f_{\mathrm{cutoff}}\).
+with $$
+u = f / f_{\mathrm{cutoff}}$$.
 
 
 ---
@@ -551,34 +551,34 @@ u = f / f_{\mathrm{cutoff}}\).
 
 For a circular aperture, diffraction produces an Airy pattern:
 
-\[h_{\mathrm{airy}}(r)=\left[
+$$h_{\mathrm{airy}}(r)=\left[
 \frac{2 J_1(kr)}{kr}
 \right]^2
-\]
+$$
 
 where  
-- \(J_1\) is the Bessel function of the first kind,  
-- \(k = \dfrac{\pi D}{\lambda f}\).
+- $$J_1$$ is the Bessel function of the first kind,  
+- $$k = \dfrac{\pi D}{\lambda f}$$.
 
 ### **Airy MTF**
 
 Diffraction-limited MTF takes the form:
 
-\[\mathrm{MTF}_{\mathrm{diff}}(u)=
+$$\mathrm{MTF}_{\mathrm{diff}}(u)=
 \dfrac{2}{\pi}
 \left[
 \arccos(u)-
 u\sqrt{1-
 u^2}
 \right]
-\]
+$$
 
 where the cutoff frequency is:
-\[
+$$
 f_{\mathrm{cutoff}}=\frac{1}{\lambda N}
-\]
+$$
 
-with f-number \(N\).
+with f-number $$N$$.
 
 ---
 
@@ -586,31 +586,31 @@ with f-number \(N\).
 
 Wavefront:
 
-\[
+$$
 W(
 \rho,\theta)=\sum_k a_k Z_k(
 \rho,\theta)
-\]
+$$
 
 Pupil:
 
-\[P(\rho,\theta)=
+$$P(\rho,\theta)=
 A(
 \rho)\exp\!\left(i\,\frac{2\pi}{\lambda}W(
 \rho,\theta)
 \right)
-\]
-where \(A(
-\rho)\) describes aperture geometry.
+$$
+where $$A(
+\rho)$$ describes aperture geometry.
 
 The PSF follows from the Fourier transform relationship:
 
 PSF:
 
-\[
+$$
 h(x,y) = |\mathcal{F}\{P(
 \rho,\theta)\}|^2
-\]
+$$
 
 This formulation supports modeling of coma, astigmatism, spherical aberration, trefoil, and higher-order wavefront errors.
 
@@ -620,10 +620,10 @@ This formulation supports modeling of coma, astigmatism, spherical aberration, t
 
 A wavelength-weighted PSF may be constructed as:
 
-\[h_{\mathrm{poly}}(x,y)=
+$$h_{\mathrm{poly}}(x,y)=
 \sum_{\lambda}
 w(\lambda)\,h_{\lambda}(x,y)
-\]
+$$
 
 where the weighting function reflects illumination spectrum and sensor quantum efficiency.
 
@@ -634,7 +634,7 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Component | Responsibility |
 |-----------|----------------|
 | PSF generator | Gaussian/defocus/Airy/Zernike |
-| Normalization | ensure \(\iint h=1\) |
+| Normalization | ensure $$\iint h=1$$ |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
 
@@ -659,15 +659,15 @@ Sensor behavior is modeled through:
 
 ## **6.1 Irradiance-to-Electron Conversion**
 
-\[
+$$
 N_e(x,y)=I_{\mathrm{opt}} A_{pix} t_{exp} QE
-\]
+$$
 
 | Term | Meaning |
 |------|---------|
-| \(A_{pix}\) | pixel area |
-| \(t_{exp}\) | exposure time |
-| \(QE\) | quantum efficiency |
+| $$A_{pix}$$ | pixel area |
+| $$t_{exp}$$ | exposure time |
+| $$QE$$ | quantum efficiency |
 
 This expression assumes uniform pixel response and wavelength-independent QE unless otherwise extended.
 
@@ -675,9 +675,9 @@ This expression assumes uniform pixel response and wavelength-independent QE unl
 
 ## **6.2 Shot Noise**
 Photon arrival follows a Poisson process. The shot-noise–perturbed electron count is:
-\[
+$$
 N_e' \sim Poisson(N_e)
-\]
+$$
 
 | Property | Meaning |
 |----------|---------|
@@ -688,9 +688,9 @@ N_e' \sim Poisson(N_e)
 
 ## **6.3 Read Noise**
 Electronic contributions are modeled as additive Gaussian noise:
-\[
+$$
 N_e^{noisy}=N_e' + \mathcal{N}(0,\sigma_r^2)
-\]
+$$
 
 | Noise | Meaning |
 |--------|---------|
@@ -702,20 +702,20 @@ N_e^{noisy}=N_e' + \mathcal{N}(0,\sigma_r^2)
 ## **6.4 Full-Well Capacity**
 
 Electron counts are limited by pixel full-well capacity (FWC):
-\[
+$$
 N_e^{sat}(x,y)=\min(N_e^{noisy},FWC)
-\]
+$$
 FWC defines the maximum number of electrons the photodiode can hold before saturation occurs.
 
 ---
 
 ## **6.5 Pixel-Aperture MTF**
 Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function.  
-For a rectangular aperture of width \(p\):
+For a rectangular aperture of width $$p$$:
 
-\[
+$$
 MTF_{pixel}(f)=|\mathrm{sinc}(\pi f p)|
-\]
+$$
 
 > **Note**  
 > Simulator uses spatial-domain averaging to approximate this, which is equivalent to convolving with a box kernel.
@@ -725,18 +725,18 @@ MTF_{pixel}(f)=|\mathrm{sinc}(\pi f p)|
 ## **6.6 Quantization**
 Electron counts are converted to digital numbers (DN) through:
 
-\[
+$$
 DN(x,y) =
 \left\lfloor
     \frac{N_e^{\mathrm{sat}}(x,y)}{CG}
 \right\rceil+ BL
-\]
+$$
 
 | Term | Meaning |
 |------|---------|
-| \(CG\) | conversion gain |
-| \(BL\) | black level |
-| \(2^B-1\) | max DN, the output is clamped to the bit-depth interval |
+| $$CG$$ | conversion gain |
+| $$BL$$ | black level |
+| $$2^B-1$$ | max DN, the output is clamped to the bit-depth interval |
 
 
 ---
@@ -745,20 +745,20 @@ DN(x,y) =
 
 After quantization, the spatial sampling imposed by the pixel grid restricts representable spatial frequencies to:
 
-\[
+$$
 f_{\mathrm{Nyquist}} = \frac{1}{2p}
-\]
+$$
 
 
 ---
 
 ## **6.8 Global SNR Metric**
 
-\[
+$$
 \mathrm{SNR}_{dB}=
 20\log_{10}\left(\frac{\sigma_{signal}}{\sigma_{noise}}
 \right)
-\]
+$$
 
 where  
 - “signal” refers to the variance of the noise-free irradiance,  
@@ -798,17 +798,17 @@ The metrics module analyzes spatial resolution, spectral behavior, and noise per
 
 A global SNR estimate is computed by comparing a noise-free irradiance reference to the corresponding noisy output:
 
-\[\mathrm{SNR}_{\mathrm{dB}}=20 \log_{10}
+$$\mathrm{SNR}_{\mathrm{dB}}=20 \log_{10}
 \left(
 \frac{\sigma_{\mathrm{signal}}}{
       \sigma_{\mathrm{noise}}}
 \right)
-\]
+$$
 
 | Term | Meaning |
 |------|---------|
-| \(\sigma_{signal}\) | std of noise-free irradiance |
-| \(\sigma_{noise}\) | std of difference between noisy and clean outputs |
+| $$\sigma_{signal}$$ | std of noise-free irradiance |
+| $$\sigma_{noise}$$ | std of difference between noisy and clean outputs |
 
 ---
 
@@ -844,32 +844,32 @@ Two frameworks:
 
 A tilted edge provides subpixel sampling of a binary step transition.  
 Pixel values along the edge normal are aggregated and binned by fractional-pixel position to produce a smooth ESF:
-\[e(x) = \text{oversampled edge profile}
+$$e(x) = \text{oversampled edge profile}
 ;
 f_{\mathrm{Nyquist}} = 0.5 \;\text{cpp}
-\]
+$$
 ### **7.4.2 LSF**
 
-\[
+$$
 l(x) = \frac{d}{dx} e(x)
-\]
+$$
 
 ### **7.4.3 MTF**
 
-\[
+$$
 \mathrm{MTF}(f)=|\mathcal{F}\{l(x)\}|
-\]
+$$
 
 ---
 
 ## **7.5 System MTF Composition**
 
-\[
+$$
 MTF_{system}=
 MTF_{optics}\cdot
 MTF_{pixel}\cdot
 MTF_{sampling}
-\]
+$$
 
 | Component | Meaning |
 |-----------|---------|
@@ -896,7 +896,7 @@ The implemented metrics support several validation procedures:
 | Validation | Method |
 |------------|--------|
 | Gaussian blur | compare MTF to analytic curve |
-| Sensor noise |  compare SNR trends against \( \sigma_{\mathrm{shot}}^2 = N_e \) and \( \sigma_r \). |
+| Sensor noise |  compare SNR trends against $$ \sigma_{\mathrm{shot}}^2 = N_e $$ and $$ \sigma_r $$. |
 | Pixel MTF | sinc-shape behavior |
 | Sampling | aliasing near Nyquist |
 
