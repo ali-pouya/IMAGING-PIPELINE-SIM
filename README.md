@@ -125,9 +125,6 @@ $$
 
 ## **2.3 Repository Architecture**
 
-
-<summary><strong>Directory Structure</strong></summary>
-
 ```
 src/
 │
@@ -165,8 +162,6 @@ The script performs:
 | 4 | Metric computation | SNR, diagnostic data |
 | 5 | Export states | `.npy` tensors |
 
-> **Note**  
-> All intermediate arrays are saved for reproducibility.
 
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
@@ -174,11 +169,6 @@ The script performs:
 <h1 id="module-architecture" align="center">🧩 3. Module Architecture</h1>
 
 The simulator contains distinct modules directly corresponding to physical image-formation stages.
-They are designed for:
-- being deterministic  
-- modular substitution  
-- traceability  
-- interchangeable models  
 
 ---
 
@@ -209,20 +199,9 @@ Simplifies:
 
 ---
 
-## **3.3 `main_full.py` — Batch + Testing Interface**
-
-Used for:
-
-- parameter sweeps  
-- automated testing  
-- regression analysis  
-- multi-run experiments  
-
----
-
 ## **3.4 Scene Module — `scenes/scene_generator.py`**
 
-Scene types:
+Scene types: (range `[0,1]`, `float32`, and deterministic)
 
 | Scene | Purpose |
 |--------|---------|
@@ -233,20 +212,11 @@ Scene types:
 | Gradient | tonal + ADC tests |
 | Custom | arbitrary irradiance |
 
-All outputs:
-
-- `float32`  
-- range `[0,1]`  
-- deterministic  
-
 ---
 
 ## **3.5 Optics Module — `optics/optics_model.py`**
 
-Applies PSF via **spatial-domain convolution**.
-
-> **Important**  
-> Spatial convolution avoids FFT wrap-around artifacts.
+Applies PSF via **spatial-domain convolution**. Spatial convolution avoids FFT wrap-around artifacts.
 
 Models supported:
 
@@ -278,7 +248,7 @@ $$
 
 | Stage | Formula / Operation | Purpose |
 |-------|----------------------|---------|
-| Electron generation | \(N_e = I_{opt} A_{pix} t_{exp} QE\) | Convert irradiance to electrons |
+| Electron generation | \( N_e = I_{opt} A_{pix} t_{exp} QE \) | Convert irradiance to electrons |
 | Shot noise | \(N_e' \sim Poisson(N_e)\) | Photon arrival randomness |
 | Read noise | \(N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)\) | Electronic noise floor |
 | Pixel-aperture MTF | Spatial averaging (box filter) | Models finite pixel size |
