@@ -8,26 +8,22 @@
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
 ## 📑 Quick Navigation
-- [1. Summary](#1-summary)
-- [2. Pipeline Overview & System Architecture](#2-pipeline-overview--system-architecture)
-- [3. Module Architecture](#3-module-architecture)
-- [4. Scene Modeling Theory](#4-scene-modeling-theory)
-- [5. Optics Modeling Theory](#5-optics-modeling-theory)
-- [6. Sensor Modeling Theory](#6-sensor-modeling-theory)
-- [7. Metrics and Analysis Theory](#7-metrics-and-analysis-theory)
-- [8. CLI Usage, Reference Experiments, and Workflows](#8-cli-usage-reference-experiments-and-workflows)
-- [9. Extensibility](#9-extensibility-and-advanced-pipeline-development)
-- [Intended Uses](#-intended-uses)
-- [License](#-license)
-- [Author](#-author)
+- [1. Summary](#summary)
+- [2. Pipeline Overview & System Architecture](#pipeline-overview-system-architecture)
+- [3. Module Architecture](#module-architecture)
+- [4. Scene Modeling Theory](#scene-modeling-theory)
+- [5. Optics Modeling Theory](#optics-modeling-theory)
+- [6. Sensor Modeling Theory](#sensor-modeling-theory)
+- [7. Metrics and Analysis Theory](#metrics-and-analysis-theory)
+- [8. CLI Usage, Reference Experiments, and Workflows](#cli-usage-reference-experiments-workflows)
+- [9. Extensibility](#extensibility-advanced-development)
+- [Intended Uses](#intended-uses)
+- [License](#license)
+- [Author](#author)
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 📘 **1. Summary**
-
-</div>
+<h1 id="summary" align="center">📘 1. Summary</h1>
 
 The *Imaging Pipeline Simulator* models the complete signal-formation sequence of a digital imaging system. Its design integrates analytically defined scenes, physically interpretable optical blur models, and pixel-level sensor behavior into a unified and deterministic pipeline suitable for quantitative analysis.
 
@@ -52,11 +48,7 @@ The implementation emphasizes:
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 🧭 **2. Pipeline Overview & System Architecture**
-
-</div>
+<h1 id="pipeline-overview-system-architecture" align="center">🧭 2. Pipeline Overview &amp; System Architecture</h1>
 
 The imaging pipeline follows a deterministic sequence of transformations that reflect the signal-formation pathway of real digital imaging systems.
 The process is organized into **four conceptual subsystems**:  
@@ -71,19 +63,19 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 ## **2.1 High-Level Data Flow**
 
 ```
- ┌──────────────────┐    ┌───────────────────────┐    ┌─────────────────────────┐    ┌──────────────────────┐
- │    SCENE MODEL   │--->│     OPTICAL SYSTEM    │--->│      IMAGE SENSOR       │--->│   METRIC ANALYSIS    │
- │ (irradiance map) │    │ (PSF convolution: h)  │    │ (electrons → DN output) │    │  (SNR, MTF, spectra) │
- └──────────────────┘    └───────────────────────┘    └─────────────────────────┘    └──────────────────────┘
+┌──────────────────┐   ┌──────────────────────┐   ┌─────────────────────────┐   ┌──────────────────────┐
+│    SCENE MODEL   │-->│     OPTICAL SYSTEM   │-->│       IMAGE SENSOR      │-->│   METRIC ANALYSIS    │
+│ (irradiance map) │   │ (PSF convolution: h) │   │ (electrons → DN output) │   │  (SNR, MTF, spectra) │
+└──────────────────┘   └──────────────────────┘   └─────────────────────────┘   └──────────────────────┘
 ```
 
 Let:
 
-- $$ S(x, y) $$: scene irradiance in normalized units  
-- $$ h(x, y) $$: point spread function  
-- $$ I_{\mathrm{opt}}(x, y) = (S * h)(x, y) $$: optically blurred irradiance  
-- $$ N_e(x, y) $$: electron map  
-- $$ DN(x, y) $$: quantized digital output  
+- \( S(x, y) \): scene irradiance in normalized units  
+- \( h(x, y) \): point spread function  
+- \( I_{\mathrm{opt}}(x, y) = (S * h)(x, y) \): optically blurred irradiance  
+- \( N_e(x, y) \): electron map  
+- \( DN(x, y) \): quantized digital output  
 
 ---
 
@@ -179,11 +171,7 @@ The script performs:
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 🧩 **3. Module Architecture**
-
-</div>
+<h1 id="module-architecture" align="center">🧩 3. Module Architecture</h1>
 
 The simulator contains distinct modules directly corresponding to physical image-formation stages.
 They are designed for:
@@ -290,11 +278,11 @@ $$
 
 | Stage | Formula / Operation | Purpose |
 |-------|----------------------|---------|
-| Electron generation | $$N_e = I_{opt} A_{pix} t_{exp} QE$$ | Convert irradiance to electrons |
-| Shot noise | $$N_e' \sim Poisson(N_e)$$ | Photon arrival randomness |
-| Read noise | $$N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)$$ | Electronic noise floor |
+| Electron generation | \(N_e = I_{opt} A_{pix} t_{exp} QE\) | Convert irradiance to electrons |
+| Shot noise | \(N_e' \sim Poisson(N_e)\) | Photon arrival randomness |
+| Read noise | \(N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)\) | Electronic noise floor |
 | Pixel-aperture MTF | Spatial averaging (box filter) | Models finite pixel size |
-| Quantization | $$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$$ | ADC conversion |
+| Quantization | \(DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)\) | ADC conversion |
 | Saturation | clamp to FWC | Prevents overflow |
 
 ---
@@ -315,11 +303,9 @@ Two families of metrics:
 
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
-<div align="center">
 
-# 🎨 **4. Scene Modeling Theory**
+<h1 id="scene-modeling-theory" align="center">🎨 4. Scene Modeling Theory</h1>
 
-</div>
 Analytic scenes provide controlled spatial frequencies and deterministic reproducibility.
 
 ## **4.1 Purpose of Analytic Scenes**
@@ -347,7 +333,7 @@ S(x,y)=\frac{1}{2}\left[1+\mathrm{sign}(\cos(N\theta))\right]
 $$
 <div align="center">
 
-where $$ \theta = \mathrm{atan2}(y,x) $$ and $$ N $$ is the number of radial spokes.
+where \( \theta = \mathrm{atan2}(y,x) \) and \( N \) is the number of radial spokes.
 
 </div>
 
@@ -361,7 +347,7 @@ where $$ \theta = \mathrm{atan2}(y,x) $$ and $$ N $$ is the number of radial spo
 
 ### **4.2.2 Slanted Edge**
 
-Binary transition rotated by angle $$ theta $$:
+Binary transition rotated by angle \( \theta \):
 
 $$
 S(x,y)=
@@ -390,7 +376,7 @@ S(x,y)=
 $$ 
 <div align="center">
 
-where $$ p $$ is the block period.
+where \( p \) is the block period.
 
 </div>
 
@@ -432,7 +418,7 @@ $$
 ### **4.2.6 Custom Scenes**
 
 > **Note**  
-> Any grayscale image can be mapped to $$[0,1]$$ and used as a scene.
+> Any grayscale image can be mapped to \([0,1]\) and used as a scene.
 
 ---
 
@@ -453,7 +439,7 @@ $$
 | Requirement | Description |
 |-------------|-------------|
 | Output type | `float32` |
-| Range | $$[0,1]$$ |
+| Range | \([0,1]\) |
 | Deterministic | yes |
 | Convolution-ready | edges continuous |
 | Pixel-aligned | spatially consistent |
@@ -461,11 +447,7 @@ $$
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 🔬 **5. Optics Modeling Theory**
-
-</div>
+<h1 id="optics-modeling-theory" align="center">🔬 5. Optics Modeling Theory</h1>
 
 Optical effects are simulated via convolution with a point spread function (PSF).  
 This section retains all your original content but reorganizes structure for clarity.
@@ -481,7 +463,7 @@ $$
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
-| Energy normalized | $$\iint h(x,y)\,dx\,dy = 1$$ |
+| Energy normalized | \(\iint h(x,y)\,dx\,dy = 1\) |
 | Spatial convolution | avoids FFT wrap-around artifacts |
 
 ---
@@ -497,7 +479,7 @@ $$h_{\mathrm{gauss}}(x,y)=
 $$
 
 where  
-- $$ \sigma $$ is expressed in pixel units,  
+- \( \sigma \) is expressed in pixel units,  
 - kernel radius is selected to approximate infinite support.  
 
 Gaussian blur functions as a surrogate for aggregated optical effects such as small defocus, minor manufacturing deviations, and residual aberrations.
@@ -515,7 +497,7 @@ $$
 |----------|---------|
 | Closed-form MTF | easy validation |
 | Approx. optical blur | surrogate for real aberrations |
-| Controlled blur strength | via $$\sigma$$ |
+| Controlled blur strength | via \(\sigma\) |
 
 ---
 
@@ -523,14 +505,15 @@ $$
 
 Geometric defocus produces a uniformly illuminated disk:
 
-$$h_{\mathrm{defocus}}(r)=
+$$
+h_{\mathrm{defocus}}(r)=
 \begin{cases}
-\dfrac{1}{\pi R^2}, & r \le R \
+\dfrac{1}{\pi R^2}, & r \le R \\
 0, & r > R
 \end{cases}
 $$
 
-where the radius $$R$$ relates to defocus distance and f-number.
+where the radius \(R\) relates to defocus distance and f-number.
 
 ### **Defocus MTF**
 
@@ -541,8 +524,8 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
 \right]
 $$
 
-with $$
-u = f / f_{\mathrm{cutoff}}$$.
+with \(
+u = f / f_{\mathrm{cutoff}}\).
 
 
 ---
@@ -557,8 +540,8 @@ $$h_{\mathrm{airy}}(r)=\left[
 $$
 
 where  
-- $$J_1$$ is the Bessel function of the first kind,  
-- $$k = \dfrac{\pi D}{\lambda f}$$.
+- \(J_1\) is the Bessel function of the first kind,  
+- \(k = \dfrac{\pi D}{\lambda f}\).
 
 ### **Airy MTF**
 
@@ -578,7 +561,7 @@ $$
 f_{\mathrm{cutoff}}=\frac{1}{\lambda N}
 $$
 
-with f-number $$N$$.
+with f-number \(N\).
 
 ---
 
@@ -587,9 +570,7 @@ with f-number $$N$$.
 Wavefront:
 
 $$
-W(
-\rho,\theta)=\sum_k a_k Z_k(
-\rho,\theta)
+W(\rho,\theta)=\sum_k a_k Z_k(\rho,\theta)
 $$
 
 Pupil:
@@ -600,8 +581,8 @@ A(
 \rho,\theta)
 \right)
 $$
-where $$A(
-\rho)$$ describes aperture geometry.
+where \(A(
+\rho)\) describes aperture geometry.
 
 The PSF follows from the Fourier transform relationship:
 
@@ -634,7 +615,7 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Component | Responsibility |
 |-----------|----------------|
 | PSF generator | Gaussian/defocus/Airy/Zernike |
-| Normalization | ensure $$\iint h=1$$ |
+| Normalization | ensure \(\iint h=1\) |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
 
@@ -642,11 +623,7 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 🖥️ **6. Sensor Modeling Theory**
-
-</div>
+<h1 id="sensor-modeling-theory" align="center">🖥️ 6. Sensor Modeling Theory</h1>
 
 Sensor behavior is modeled through:  
 - photon → electron conversion  
@@ -665,9 +642,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| $$A_{pix}$$ | pixel area |
-| $$t_{exp}$$ | exposure time |
-| $$QE$$ | quantum efficiency |
+| \(A_{pix}\) | pixel area |
+| \(t_{exp}\) | exposure time |
+| \(QE\) | quantum efficiency |
 
 This expression assumes uniform pixel response and wavelength-independent QE unless otherwise extended.
 
@@ -711,7 +688,7 @@ FWC defines the maximum number of electrons the photodiode can hold before satur
 
 ## **6.5 Pixel-Aperture MTF**
 Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function.  
-For a rectangular aperture of width $$p$$:
+For a rectangular aperture of width \(p\):
 
 $$
 MTF_{pixel}(f)=|\mathrm{sinc}(\pi f p)|
@@ -734,9 +711,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| $$CG$$ | conversion gain |
-| $$BL$$ | black level |
-| $$2^B-1$$ | max DN, the output is clamped to the bit-depth interval |
+| \(CG\) | conversion gain |
+| \(BL\) | black level |
+| \(2^B-1\) | max DN, the output is clamped to the bit-depth interval |
 
 
 ---
@@ -784,11 +761,8 @@ Although not a pixel-wise or frequency-dependent SNR measure, this metric provid
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
+<h1 id="metrics-and-analysis-theory" align="center">📈 7. Metrics and Analysis Theory</h1>
 
-# 📈 **7. Metrics and Analysis Theory**
-
-</div>
 The metrics module analyzes spatial resolution, spectral behavior, and noise performance.
 
 
@@ -807,8 +781,8 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| $$\sigma_{signal}$$ | std of noise-free irradiance |
-| $$\sigma_{noise}$$ | std of difference between noisy and clean outputs |
+| \(\sigma_{signal}\) | std of noise-free irradiance |
+| \(\sigma_{noise}\) | std of difference between noisy and clean outputs |
 
 ---
 
@@ -844,8 +818,11 @@ Two frameworks:
 
 A tilted edge provides subpixel sampling of a binary step transition.  
 Pixel values along the edge normal are aggregated and binned by fractional-pixel position to produce a smooth ESF:
-$$e(x) = \text{oversampled edge profile}
-;
+$$
+e(x) = \text{oversampled edge profile}
+$$
+
+$$
 f_{\mathrm{Nyquist}} = 0.5 \;\text{cpp}
 $$
 ### **7.4.2 LSF**
@@ -896,7 +873,7 @@ The implemented metrics support several validation procedures:
 | Validation | Method |
 |------------|--------|
 | Gaussian blur | compare MTF to analytic curve |
-| Sensor noise |  compare SNR trends against $$ \sigma_{\mathrm{shot}}^2 = N_e $$ and $$ \sigma_r $$. |
+| Sensor noise |  compare SNR trends against \( \sigma_{\mathrm{shot}}^2 = N_e \) and \( \sigma_r \). |
 | Pixel MTF | sinc-shape behavior |
 | Sampling | aliasing near Nyquist |
 
@@ -904,11 +881,8 @@ The implemented metrics support several validation procedures:
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
+<h1 id="cli-usage-reference-experiments-workflows" align="center">⚙️ 8. CLI Usage, Reference Experiments, and Workflows</h1>
 
-# ⚙️ **8. CLI Usage, Reference Experiments, and Workflows**
-
-</div>
 
 ## **8.1 CLI Overview**
 
@@ -1010,11 +984,7 @@ python src/main.py --scene slanted_edge --sigma 0.7
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<div align="center">
-
-# 🚀 **9. Extensibility and Advanced Development**
-
-</div>
+<h1 id="extensibility-advanced-development" align="center">🚀 9. Extensibility and Advanced Development</h1>
 
 ## **9.1 Extensible Components**
 
@@ -1084,7 +1054,7 @@ python src/main.py --scene slanted_edge --sigma 0.7
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-# 📈 **Intended Uses**
+<h2 id="intended-uses" align="left">📈 Intended Uses</h2>
 
 - Imaging-chain parameter sweeps  
 - Virtual testing  
@@ -1092,13 +1062,13 @@ python src/main.py --scene slanted_edge --sigma 0.7
 
 ---
 
-# 📜 **License**
+<h2 id="license" align="left">📜 License</h2>
 
 Distributed under the MIT License.
 
 ---
 
-# 👤 **Author**
+<h2 id="author" align="left">👤 Author</h2>
 
 ### **Ali Pouya**  
 Optical Engineer — Optics & Metrology System Design 
