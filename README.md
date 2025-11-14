@@ -63,10 +63,10 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 ## **2.1 High-Level Data Flow**
 
 ```
-┌──────────────────┐   ┌──────────────────────┐   ┌─────────────────────────┐   ┌──────────────────────┐
-│    SCENE MODEL   │-->│     OPTICAL SYSTEM   │-->│       IMAGE SENSOR      │-->│   METRIC ANALYSIS    │
-│ (irradiance map) │   │ (PSF convolution: h) │   │ (electrons → DN output) │   │  (SNR, MTF, spectra) │
-└──────────────────┘   └──────────────────────┘   └─────────────────────────┘   └──────────────────────┘
+┌────────────────┐   ┌──────────────────────┐   ┌─────────────────────────┐   ┌───────────────────┐
+│   SCENE MODEL  │-->│    OPTICAL SYSTEM    │-->│      IMAGE SENSOR       │-->│  METRIC ANALYSIS  │
+│(irradiance map)│   │ (PSF convolution: h) │   │ (electrons → DN output) │   │(SNR, MTF, spectra)│
+└────────────────┘   └──────────────────────┘   └─────────────────────────┘   └───────────────────┘
 ```
 
 Let:
