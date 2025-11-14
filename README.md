@@ -58,7 +58,7 @@ The process is organized into **four conceptual subsystems**:
 </div>
 Each subsystem operates on well-defined physical quantities.The design promotes traceability from theoretical models to numerical implementation.
 
----
+
 
 ## **2.1 High-Level Data Flow**
 
@@ -77,7 +77,6 @@ Let:
 - $ N_e(x, y) $: electron map  
 - $ DN(x, y) $: quantized digital output  
 
----
 
 ## **2.2 Mathematical Formulation of the Pipeline**
 
@@ -101,11 +100,10 @@ $$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rce
 
 <br>
 
-> **Important**  
-> All PSFs are explicitly energy-normalized.  
-> This ensures irradiance conservation after convolution.
+> **Note**  
+> All PSFs are explicitly energy-normalized. This ensures irradiance conservation after convolution.
 
----
+
 
 ## **2.3 Repository Architecture**
 
@@ -130,7 +128,6 @@ src/
             └── metrics_module.py
 ```
 
----
 
 ## **2.4 Execution Flow in `main.py`**
 
@@ -166,7 +163,7 @@ Operations:
 - global SNR measurement  
 - intermediate state export  
 
----
+
 
 ## **3.2 `main_classic.py` — Minimal Version**
 
@@ -177,7 +174,7 @@ Simplifies:
 - no batch mode  
 - minimal parameters  
 
----
+
 
 ## **3.4 Scene Module — `scenes/scene_generator.py`**
 
@@ -192,7 +189,7 @@ Scene types: (range `[0,1]`, `float32`, and deterministic)
 | Gradient | tonal + ADC tests |
 | Custom | arbitrary irradiance |
 
----
+
 
 ## **3.5 Optics Module — `optics/optics_model.py`**
 
@@ -208,13 +205,15 @@ Models supported:
 
 Gaussian PSF:
 
-$$h(x,y)=\frac{1}{2\pi\sigma^2}\exp\!\left(-\frac{x^2+y^2}{2\sigma^2}\right)$$
+$$
+h(x,y)=\frac{1}{2\pi\sigma^2}\exp\left(-\frac{x^2+y^2}{2\sigma^2}\right)
+$$
 
 MTF:
 
 $$\mathrm{MTF}_{\mathrm{gauss}}(f)=\exp[-2(\pi\sigma f)^2]$$
 
----
+
 
 ## **3.6 Sensor Module — `sensor/sensor_model.py`**
 
@@ -230,7 +229,6 @@ $$\mathrm{MTF}_{\mathrm{gauss}}(f)=\exp[-2(\pi\sigma f)^2]$$
 | Quantization | $DN =\mathrm{clip}\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$ | ADC conversion |
 | Saturation | clamp to FWC | Prevents overflow |
 
----
 
 ## **3.7 Metrics Module — `utils/metrics_module.py`**
 
@@ -262,7 +260,6 @@ Analytic scenes provide controlled spatial frequencies and deterministic reprodu
 | Convolution compatibility | Sharp edges, periodic patterns, ramps |
 | Alignment with test targets | Siemens star, ISO edge, checkerboard, barcode |
 
----
 
 ## **4.2 Scene Types and Definitions**
 
@@ -282,13 +279,19 @@ where $\theta = \mathrm{atan2}(y,x)$ and $N$ is the number of radial spokes.
 | High aliasing sensitivity | reveals sampling issues |
 | Blur isotropy test | useful for verifying symmetry |
 
----
+
 
 ### **4.2.2 Slanted Edge**
 
 Binary transition rotated by angle $\theta$:
 
-$$S(x,y)=\begin{cases}1,& x\cos\theta+y\sin\theta>0\\0,& x\cos\theta+y\sin\theta\le 0\end{cases}$$
+$$
+S(x,y)=
+\begin{cases}
+1, & x\cos\theta + y\sin\theta > 0 \\
+0, & x\cos\theta + y\sin\theta \le 0
+\end{cases}
+$$
 
 | Property | Meaning |
 |----------|---------|
@@ -296,11 +299,17 @@ $$S(x,y)=\begin{cases}1,& x\cos\theta+y\sin\theta>0\\0,& x\cos\theta+y\sin\theta
 | ISO-12233 compatibility | industry-standard |
 | Sharp transition | ideal for LSF/MTF extraction |
 
----
+
 
 ### **4.2.3 Checkerboard**
 
-$$S(x,y)=\begin{cases}1,& \lfloor x/p \rfloor + \lfloor y/p \rfloor\ \text{even}\\0,& \text{otherwise}\end{cases}$$ 
+$$
+S(x,y)=
+\begin{cases}
+1, & \bigl(\lfloor x/p \rfloor + \lfloor y/p \rfloor\bigr) \bmod 2 = 0 \\
+0, & \text{otherwise}
+\end{cases}
+$$
 
 <div align="center">
 
@@ -314,7 +323,6 @@ where $p$ is the block period.
 | DR + quantization tests | reveals banding |
 | Aliasing visibility | clear folding patterns |
 
----
 
 ### **4.2.4 Barcode Pattern**
 
@@ -324,7 +332,6 @@ where $p$ is the block period.
 | DOF indicator | blur changes readability |
 | Extreme aspect ratio | stresses PSF model |
 
----
 
 ### **4.2.5 Gradient Patterns**
 
@@ -336,14 +343,12 @@ A linear irradiance ramp such as: $S(x,y)=\frac{x}{W}$ or $S(x,y)=\frac{x+y}{H+W
 | Quantization reveals banding | ADC artifacts |
 | Useful for noise visualization | smooth backgrounds |
 
----
 
 ### **4.2.6 Custom Scenes**
 
 > **Note**  
 > Any grayscale image can be mapped to $[0,1]$ and used as a scene.
 
----
 
 ## **4.3 Frequency-Domain Properties of Scenes**
 
@@ -355,7 +360,6 @@ A linear irradiance ramp such as: $S(x,y)=\frac{x}{W}$ or $S(x,y)=\frac{x+y}{H+W
 | Barcode | narrowband 1D | DOF & blur |
 | Gradient | low-frequency ramp | tone & ADC |
 
----
 
 ## **4.4 Interface Requirements**
 
@@ -384,7 +388,6 @@ $$I_{\mathrm{opt}}(x,y) = (S * h)(x,y)$$
 | Energy normalized | $\iint h(x,y)\,dx\,dy = 1$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
 
----
 
 ## **5.2 Gaussian PSF (Implemented Model)**
 
@@ -410,13 +413,18 @@ $$\mathrm{MTF}_{\mathrm{gauss}}(f)=\exp\!\left( -2(\pi\sigma f)^2 \right)$$
 | Approx. optical blur | surrogate for real aberrations |
 | Controlled blur strength | via $\sigma$ |
 
----
 
 ## **5.3 Defocus PSF (Circle of Confusion) — Extensible**
 
 Geometric defocus produces a uniformly illuminated disk:
 
-$$h_{\mathrm{defocus}}(r)=\begin{cases}\dfrac{1}{\pi R^2}, & r \le R \\0, & r > R\end{cases}$$
+$$
+h_{\mathrm{defocus}}(r)=
+\begin{cases}
+\dfrac{1}{\pi R^2}, & r \le R \\
+0, & r > R
+\end{cases}
+$$
 
 where the radius $R$ relates to defocus distance and f-number.
 
@@ -426,7 +434,6 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=\dfrac{2}{\pi}\left[\arccos(\nu)-\nu\sqrt
 
 with $\nu = f / f_{\mathrm{cutoff}}$.
 
----
 
 ## **5.4 Airy PSF (Diffraction-Limited) — Extensible**
 
@@ -449,7 +456,6 @@ $$f_{\mathrm{cutoff}}=\frac{1}{\lambda N}$$
 
 with f-number $N$.
 
----
 
 ## **5.5 Aberrated PSFs — Zernike Wavefronts**
 
@@ -459,7 +465,9 @@ $$W(\rho,\theta)=\sum_k a_k Z_k(\rho,\theta)$$
 
 Pupil:
 
-$$P(\rho,\theta)=A(\rho)\exp\!\left(i\,\frac{2\pi}{\lambda}W(\rho,\theta)\right)$$
+$$
+P(\rho,\theta)=A(\rho)\exp\left(i\,\frac{2\pi}{\lambda}\,W(\rho,\theta)\right)
+$$
 
 where $A(\rho)$ describes aperture geometry.
 
@@ -467,11 +475,12 @@ The PSF follows from the Fourier transform relationship:
 
 PSF:
 
-$$h(x, y) = \left|\mathcal{F}\{P(\rho, \theta)\}\right|^{2}$$
+$$
+h(x,y)=\left|\mathcal{F}\left(P(\rho,\theta)\right)\right|^{2}
+$$
 
 This formulation supports modeling of coma, astigmatism, spherical aberration, trefoil, and higher-order wavefront errors.
 
----
 
 ## **5.6 Polychromatic PSFs**
 
@@ -481,7 +490,6 @@ $$h_{\mathrm{poly}}(x,y)=\sum_{\lambda}w(\lambda)\,h_{\lambda}(x,y)$$
 
 where the weighting function reflects illumination spectrum and sensor quantum efficiency.
 
----
 
 ## **5.7 Optics Implementation Summary**
 
@@ -505,7 +513,6 @@ Sensor behavior is modeled through:
 - quantization  
 - sampling  
 
----
 
 ## **6.1 Irradiance-to-Electron Conversion**
 
@@ -519,7 +526,6 @@ $$N_e(x,y)=I_{\mathrm{opt}} A_{\mathrm{pix}} t_{\mathrm{exp}} QE$$
 
 This expression assumes uniform pixel response and wavelength-independent QE unless otherwise extended.
 
----
 
 ## **6.2 Shot Noise**
 
@@ -532,7 +538,6 @@ $$N_e' \sim \mathrm{Poisson}(N_e)$$
 | signal-dependent noise | variance = mean |
 | dominates mid/high light | Poisson behavior |
 
----
 
 ## **6.3 Read Noise**
 
@@ -545,7 +550,6 @@ $$N_e^{\mathrm{noisy}}=N_e' + \mathcal{N}(0,\sigma_r^2)$$
 | Gaussian | independent of illumination |
 | electronics-origin | dominates in low light and is independent of signal level |
 
----
 
 ## **6.4 Full-Well Capacity**
 
@@ -555,7 +559,6 @@ $$N_e^{\mathrm{sat}}(x,y)=\min(N_e^{\mathrm{noisy}},FWC)$$
 
 FWC defines the maximum number of electrons the photodiode can hold before saturation occurs.
 
----
 
 ## **6.5 Pixel-Aperture MTF**
 
@@ -567,7 +570,6 @@ $$\mathrm{MTF}_{\mathrm{pixel}}(f)=|\mathrm{sinc}(\pi f p)|$$
 > **Note**  
 > The simulator uses spatial-domain averaging to approximate this, which is equivalent to convolving with a box kernel.
 
----
 
 ## **6.6 Quantization**
 
@@ -581,7 +583,6 @@ $$DN(x,y) =\left\lfloor\frac{N_e^{\mathrm{sat}}(x,y)}{CG}\right\rceil+ BL$$
 | $BL$ | black level |
 | $2^B-1$ | max DN, the output is clamped to the bit-depth interval |
 
----
 
 ## **6.7 Sampling + Nyquist**
 
@@ -589,7 +590,6 @@ After quantization, the spatial sampling imposed by the pixel grid restricts rep
 
 $$f_{\mathrm{Nyquist}} = \frac{1}{2p}$$
 
----
 
 ## **6.8 Global SNR Metric**
 
@@ -600,8 +600,6 @@ where
 - “noise” refers to the variance of the difference between noise-free and noisy outputs.
 
 Although not a pixel-wise or frequency-dependent SNR measure, this metric provides a coarse assessment of noise behavior across the full image.
-
----
 
 ## **6.9 Sensor Summary**
 
@@ -633,7 +631,6 @@ $$\mathrm{SNR}_{\mathrm{dB}}=20 \log_{10}\left(\frac{\sigma_{\mathrm{signal}}}{\
 | $\sigma_{\mathrm{signal}}$ | std of noise-free irradiance |
 | $\sigma_{\mathrm{noise}}$ | std of difference between noisy and clean outputs |
 
----
 
 ## **7.2 Spatial-Resolution Metrics**
 
@@ -644,7 +641,6 @@ Two frameworks:
 | FFT-based | radial average of magnitude spectrum | blur magnitude, spectral falloff |
 | Edge-based | ESF → LSF → MTF | physically meaningful resolution curve |
 
----
 
 ## **7.3 FFT-Based MTF**
 
@@ -658,7 +654,6 @@ Two frameworks:
 > **Important**  
 > FFT-MTF is not ISO-compliant — it is for qualitative comparison only.
 
----
 
 ## **7.4 Edge-Based MTF (ISO-Style)**
 
@@ -685,7 +680,6 @@ $$l(x) = \frac{d}{dx} e(x)$$
 
 $$\mathrm{MTF}(f)=|\mathcal{F}\{l(x)\}|$$
 
----
 
 ## **7.5 System MTF Composition**
 
@@ -702,7 +696,6 @@ $$
 | pixel | aperture filter |
 | sampling | Nyquist truncation |
 
----
 
 ## **7.6 Frequency Units**
 
@@ -712,7 +705,6 @@ $$
 | Nyquist | 0.5 cpp |
 | high freq roll-off | dominated by PSF + pixel MTF |
 
----
 
 ## **7.7 Validation Procedures**
 
@@ -737,7 +729,6 @@ The implemented metrics support several validation procedures:
 python src/main.py
 ```
 
----
 
 ## **8.2 CLI Parameters**
 
@@ -760,7 +751,6 @@ python src/main.py
 | `--bit_depth` | ADC bit depth |
 | `--outdir` | output directory |
 
----
 
 ## **8.3 Example Execution**
 
@@ -768,7 +758,6 @@ python src/main.py
 python src/main.py --scene siemens_star --size 512 --sigma 1.2 --bit_depth 12 --outdir outputs
 ```
 
----
 
 ## **8.4 Output Structure**
 
@@ -780,7 +769,6 @@ python src/main.py --scene siemens_star --size 512 --sigma 1.2 --bit_depth 12 --
 | `sensor_electrons.npy` | electrons |
 | `sensor_dn.npy` | quantized DN |
 
----
 
 ## **8.5 Reference Experiments**
 
@@ -808,7 +796,6 @@ python src/main.py --scene checker --bit_depth 10 --sigma 0.5
 python src/main.py --scene slanted_edge --sigma 0.7
 ```
 
----
 
 ## **8.6 Regression Testing**
 
@@ -818,7 +805,6 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | 2 | rerun pipeline |
 | 3 | compare SNR, histogram, MTF curves |
 
----
 
 ## **8.7 Batch Experimentation**
 
@@ -842,7 +828,6 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | Sensor model | noise sources, PRNU/DSNU, HDR |
 | Metrics | ISO-complete MTF, PSD |
 
----
 
 ## **9.2 Extending Optics**
 
@@ -852,7 +837,7 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | Zernike models | aberration simulation |
 | spatially varying PSFs | field-split convolution |
 
----
+
 
 ## **9.3 Extending Sensor Modeling**
 
@@ -863,7 +848,6 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | row/column noise | structured noise |
 | rolling shutter | temporal integration |
 
----
 
 ## **9.4 Extending Scene Models**
 
@@ -874,7 +858,6 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | multi-plane irradiance | depth-based scenes |
 | time-varying scenes | rolling shutter tests |
 
----
 
 ## **9.5 Extending Metrics**
 
@@ -885,7 +868,6 @@ python src/main.py --scene slanted_edge --sigma 0.7
 | temporal metrics | rolling shutter |
 | noise PSD | frequency-domain noise |
 
----
 
 ## **9.6 Implementation Constraints**
 
@@ -906,19 +888,16 @@ python src/main.py --scene slanted_edge --sigma 0.7
 - Virtual testing  
 - Visualization of imaging system behavior  
 
----
 
 <h2 id="license" align="left">📜 License</h2>
 
 Distributed under the MIT License.
 
----
 
 <h2 id="author" align="left">👤 Author</h2>
 
 ### **Ali Pouya**  
 Optical Engineer — Optics &amp; Metrology System Design 
-
 GitHub: https://github.com/ali-pouya
 
 
