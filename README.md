@@ -25,26 +25,37 @@
 
 <h1 id="summary" align="center">📘 1. Summary</h1>
 
-The *Imaging Pipeline Simulator* models the complete signal-formation sequence of a digital imaging system. Its design integrates analytically defined scenes, physically interpretable optical blur models, and pixel-level sensor behavior into a unified and deterministic pipeline suitable for quantitative analysis.
+The *Imaging Pipeline Simulator* is a physics-grounded, end-to-end model of digital image formation.  
+It was originally built to visualize and compare imaging behavior between two OnSemi CMOS sensors with different sensor parameters—and has since grown into a general-purpose simulation framework.
 
-The simulator represents the imaging chain: **Scene → Optics → Sensor → Metrics**
+At its core, the pipeline models the full transformation chain:
 
-and provides a controlled environment for studying:
+**Scene → Optics → Sensor → Sampling → Metrics**
 
-- Formation and transformation of irradiance distributions  
-- Point-spread–based optical degradation  
-- Sensor-level electron generation and noise processes  
-- Digital sampling, quantization, and pixel-aperture effects  
-- Spatial-resolution behavior expressed via PSF–LSF–ESF–MTF relationships  
+Each stage is represented explicitly, enabling controlled, deterministic experiments where every contributing factor (blur, noise, pixel geometry, quantization, and sampling) can be isolated and studied independently. This simulator provides an environment where you can:
 
-The implementation emphasizes:
+- **Trace irradiance formation with full physical transparency**  
+  (ideal scenes, continuous irradiance, energy-normalized PSFs)
 
-- **Deterministic synthetic data generation**  
-- **Energy-normalized, pixel-domain PSF convolution**  
-- **Gaussian blur as a baseline optical surrogate**, with extension pathways to Zernike-derived aberrated PSFs  
-- **Physically grounded sensor modeling**, including photon statistics, shot noise, read noise, pixel MTF, full-well limits, conversion gain, and ADC quantization  
-- **Frequency-domain and edge-based resolution analysis**, including ISO-style slanted-edge MTF estimation and FFT-based spectral metrics  
+- **Model optical degradation using interpretable PSFs**  
+  Gaussian as a baseline, with extension paths to Airy, defocus, and Zernike-derived aberrations
 
+- **Simulate realistic sensor physics**  
+  photon statistics, shot noise, read noise, pixel-aperture MTF, full-well behavior, conversion gain, and quantization
+
+- **Analyze resolution and spectral behavior**  
+  through ISO-style slanted-edge MTF, FFT-based falloff, aliasing exposure, and system-MTF composition
+
+The goal is not to mimic camera pipelines from industry OEMs, but to provide a **transparent, mathematically clean, and physically interpretable reference model**.  
+It is designed to understand and visualize **why** an imaging system behaves the way it does—before adding complexity such as color pipelines, demosaicing, tone-mapping, or sharpening.
+
+#### **Intended uses include:**
+
+- comparing imaging with different sensors  
+- studying spatial-resolution limits under controlled blur  
+- testing aliasing behavior  
+- validating algorithms against known ground truth  
+- visualizing image-formation physics  
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
@@ -62,6 +73,8 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 
 ## **2.1 High-Level Data Flow**
 
+<div align="center">
+
 ```text
 ┌────────────────┐   ┌──────────────────────┐   ┌─────────────────────────┐   ┌───────────────────┐
 │   SCENE MODEL  │-->│    OPTICAL SYSTEM    │-->│      IMAGE SENSOR       │-->│  METRIC ANALYSIS  │
@@ -69,13 +82,15 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 └────────────────┘   └──────────────────────┘   └─────────────────────────┘   └───────────────────┘
 ```
 
+</div>
+
 Let:
 
-- $ S(x, y) $: scene irradiance in normalized units  
-- $ h(x, y) $: point spread function  
-- $ I_{\mathrm{opt}}(x, y) = (S * h)(x, y) $: optically blurred irradiance  
-- $ N_e(x, y) $: electron map  
-- $ DN(x, y) $: quantized digital output  
+- $S(x, y)$: scene irradiance in normalized units  
+- $h(x, y)$: point spread function  
+- $I_{\mathrm{opt}}(x, y) = (S * h)(x, y)$: optically blurred irradiance  
+- $N_e(x, y)$: electron map  
+- $DN(x, y)$: quantized digital output  
 
 
 ## **2.2 Mathematical Formulation of the Pipeline**
@@ -182,10 +197,10 @@ Scene types: (range `[0,1]`, `float32`, and deterministic)
 
 | Scene | Purpose |
 |--------|---------|
-| Siemens star | radial frequency coverage |
-| Slanted edge | ISO MTF evaluation |
-| Checkerboard | harmonic content test |
-| Barcode | 1D high-freq pattern |
+| Siemens star | radial frequency coverage, shows aliasing radially |
+| Slanted edge | produces ESF → LSF → ISO MTF |
+| Checkerboard | stress test harmonic preservation |
+| Barcode | 1D high-freq pattern (blur sensitivity) |
 | Gradient | tonal + ADC tests |
 | Custom | arbitrary irradiance |
 
@@ -259,6 +274,13 @@ Analytic scenes provide controlled spatial frequencies and deterministic reprodu
 | Deterministic behavior | Same inputs → same outputs |
 | Convolution compatibility | Sharp edges, periodic patterns, ramps |
 | Alignment with test targets | Siemens star, ISO edge, checkerboard, barcode |
+
+**Scene irradiance interpretation**
+
+In this simulator, \(S(x,y)\) is defined as the **ideal, blur-free, noise-free, distortion-free irradiance** at the sensor plane.  
+Physically, it corresponds to the image that would be formed if the optics were perfect (no aberrations, diffraction, or defocus) and the sensor introduced no noise or quantization.  
+This separation makes it possible to attribute all subsequent resolution loss and noise strictly to the optics, sensor, and sampling chain.
+
 
 
 ## **4.2 Scene Types and Definitions**
@@ -382,11 +404,49 @@ Optical effects are simulated via convolution with a point spread function (PSF)
 
 $$I_{\mathrm{opt}}(x,y) = (S * h)(x,y)$$
 
+**Linear, shift-invariant assumption**
+
+The optics are modeled as a linear, shift-invariant (LSI) system over the simulated field. This implies that:
+
+- blur behaves the same at every location in the image, and  
+- the effect of the lens can be written as the **superposition of many blurred points**.
+
+This approximation is not exact for wide-angle, strongly off-axis, or heavily aberrated systems, but it is accurate for **small fields of view** and **center-of-field synthetic experiments**, and is standard practice in image-formation modeling.
+
+**Physical contributors to PSF shape**
+
+In real imaging systems, the PSF aggregates multiple physical effects, including:
+
+- diffraction from the finite aperture  
+- defocus and circle-of-confusion blur  
+- low- and high-order aberrations (spherical, coma, astigmatism, trefoil, etc.)  
+- manufacturing tolerances and alignment errors  
+- sensor microlenses and cover glass  
+- wavelength-dependent behavior and chromatic dispersion  
+- motion blur, which can be treated as a temporal PSF
+
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
 | Energy normalized | $\iint h(x,y)\,dx\,dy = 1$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
+
+**Why PSFs must be energy-normalized**
+
+If the PSF is not normalized to unit integral, convolution will artificially brighten or darken the image.  
+Non-unit-energy PSFs introduce:
+
+- exposure drift when changing blur parameters,  
+- brightness inconsistency between experiments, and  
+- unphysical gain or loss of radiant energy.
+
+Enforcing
+
+$$
+\iint h(x,y)\,dx\,dy = 1
+$$
+
+ensures irradiance conservation and keeps comparisons between different blur models physically meaningful.
 
 
 ## **5.2 Gaussian PSF (Implemented Model)**
@@ -406,6 +466,14 @@ Gaussian blur functions as a surrogate for aggregated optical effects such as sm
 The corresponding modulation transfer function is:
 
 $$\mathrm{MTF}_{\mathrm{gauss}}(f)=\exp\!\left( -2(\pi\sigma f)^2 \right)$$
+
+A useful rule of thumb links the Gaussian width \(\sigma\) (in pixels) to the spatial frequency at which contrast drops to 50% (MTF50):
+
+$$
+f_{50} \approx \frac{0.32}{\sigma} \quad [\text{cycles per pixel}]
+$$
+
+Smaller \(\sigma\) values correspond to sharper imagery (higher MTF50), while larger \(\sigma\) values model increased blur.
 
 | Property | Meaning |
 |----------|---------|
@@ -499,6 +567,22 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Normalization | $\iint h=1$ |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
+
+## **5.8 Handling Undersampled PSFs**
+
+When the PSF is significantly narrower than the pixel pitch (for example, Gaussian blur with \(\sigma \lesssim 0.5\) pixels), a naïve convolution on the sensor grid becomes numerically unreliable:
+
+- the ESF becomes quantized rather than smooth,  
+- the corresponding LSF develops spiky structure, and  
+- the recovered MTF can exhibit aliasing or over-optimistic resolution.
+
+To preserve the correct sampling order, the simulator uses an **upsample → blur → downsample** strategy in these regimes:
+
+1. upsample the irradiance to a finer grid,  
+2. apply the continuous-space PSF blur on the fine grid, then  
+3. downsample back to the sensor pixel pitch.
+
+This mirrors the physical process (continuous blur followed by discrete sampling) and yields stable, physically meaningful MTF estimates even when the optical blur is tighter than one pixel.
 
 
 
