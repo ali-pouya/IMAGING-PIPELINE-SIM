@@ -71,11 +71,11 @@ Each subsystem operates on well-defined physical quantities.The design promotes 
 
 Let:
 
-- \( S(x, y) \): scene irradiance in normalized units  
-- \( h(x, y) \): point spread function  
-- \( I_{\mathrm{opt}}(x, y) = (S * h)(x, y) \): optically blurred irradiance  
-- \( N_e(x, y) \): electron map  
-- \( DN(x, y) \): quantized digital output  
+- $\ S(x, y) $: scene irradiance in normalized units  
+- $\ h(x, y) $: point spread function  
+- $\ I_{\mathrm{opt}}(x, y) = (S * h)(x, y) $: optically blurred irradiance  
+- $\ N_e(x, y) $: electron map  
+- $\ DN(x, y) $: quantized digital output  
 
 ---
 
@@ -248,11 +248,11 @@ $$
 
 | Stage | Formula / Operation | Purpose |
 |-------|----------------------|---------|
-| Electron generation | \( N_e = I_{opt} A_{pix} t_{exp} QE \) | Convert irradiance to electrons |
-| Shot noise | \(N_e' \sim Poisson(N_e)\) | Photon arrival randomness |
-| Read noise | \(N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)\) | Electronic noise floor |
+| Electron generation | $\N_e = I_{opt} A_{pix} t_{exp} QE$ | Convert irradiance to electrons |
+| Shot noise | $\N_e' \sim Poisson(N_e)$ | Photon arrival randomness |
+| Read noise | $\N_e^{noisy} = N_e' + \mathcal{N}(0,\sigma_r^2)$ | Electronic noise floor |
 | Pixel-aperture MTF | Spatial averaging (box filter) | Models finite pixel size |
-| Quantization | \(DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)\) | ADC conversion |
+| Quantization | $\DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$ | ADC conversion |
 | Saturation | clamp to FWC | Prevents overflow |
 
 ---
@@ -303,7 +303,7 @@ S(x,y)=\frac{1}{2}\left[1+\mathrm{sign}(\cos(N\theta))\right]
 $$
 <div align="center">
 
-where \( \theta = \mathrm{atan2}(y,x) \) and \( N \) is the number of radial spokes.
+where $\ \theta = \mathrm{atan2}(y,x) $ and $\ N $ is the number of radial spokes.
 
 </div>
 
@@ -317,7 +317,7 @@ where \( \theta = \mathrm{atan2}(y,x) \) and \( N \) is the number of radial spo
 
 ### **4.2.2 Slanted Edge**
 
-Binary transition rotated by angle \( \theta \):
+Binary transition rotated by angle $\ \theta $:
 
 $$
 S(x,y)=
@@ -346,7 +346,7 @@ S(x,y)=
 $$ 
 <div align="center">
 
-where \( p \) is the block period.
+where $\ p $ is the block period.
 
 </div>
 
@@ -388,7 +388,7 @@ $$
 ### **4.2.6 Custom Scenes**
 
 > **Note**  
-> Any grayscale image can be mapped to \([0,1]\) and used as a scene.
+> Any grayscale image can be mapped to $\[0,1]$ and used as a scene.
 
 ---
 
@@ -409,7 +409,7 @@ $$
 | Requirement | Description |
 |-------------|-------------|
 | Output type | `float32` |
-| Range | \([0,1]\) |
+| Range | $\[0,1]$ |
 | Deterministic | yes |
 | Convolution-ready | edges continuous |
 | Pixel-aligned | spatially consistent |
@@ -433,7 +433,7 @@ $$
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
-| Energy normalized | \(\iint h(x,y)\,dx\,dy = 1\) |
+| Energy normalized | $\\iint h(x,y)\,dx\,dy = 1$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
 
 ---
@@ -449,7 +449,7 @@ $$h_{\mathrm{gauss}}(x,y)=
 $$
 
 where  
-- \( \sigma \) is expressed in pixel units,  
+- $\ \sigma $ is expressed in pixel units,  
 - kernel radius is selected to approximate infinite support.  
 
 Gaussian blur functions as a surrogate for aggregated optical effects such as small defocus, minor manufacturing deviations, and residual aberrations.
@@ -467,7 +467,7 @@ $$
 |----------|---------|
 | Closed-form MTF | easy validation |
 | Approx. optical blur | surrogate for real aberrations |
-| Controlled blur strength | via \(\sigma\) |
+| Controlled blur strength | via $\\sigma$ |
 
 ---
 
@@ -483,7 +483,7 @@ h_{\mathrm{defocus}}(r)=
 \end{cases}
 $$
 
-where the radius \(R\) relates to defocus distance and f-number.
+where the radius $\R$ relates to defocus distance and f-number.
 
 ### **Defocus MTF**
 
@@ -494,8 +494,8 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=
 \right]
 $$
 
-with \(
-u = f / f_{\mathrm{cutoff}}\).
+with $\
+u = f / f_{\mathrm{cutoff}}$.
 
 
 ---
@@ -510,8 +510,8 @@ $$h_{\mathrm{airy}}(r)=\left[
 $$
 
 where  
-- \(J_1\) is the Bessel function of the first kind,  
-- \(k = \dfrac{\pi D}{\lambda f}\).
+- $\J_1$ is the Bessel function of the first kind,  
+- $\k = \dfrac{\pi D}{\lambda f}$.
 
 ### **Airy MTF**
 
@@ -531,7 +531,7 @@ $$
 f_{\mathrm{cutoff}}=\frac{1}{\lambda N}
 $$
 
-with f-number \(N\).
+with f-number $\N$.
 
 ---
 
@@ -551,8 +551,8 @@ A(
 \rho,\theta)
 \right)
 $$
-where \(A(
-\rho)\) describes aperture geometry.
+where $\A(
+\rho)$ describes aperture geometry.
 
 The PSF follows from the Fourier transform relationship:
 
@@ -585,7 +585,7 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Component | Responsibility |
 |-----------|----------------|
 | PSF generator | Gaussian/defocus/Airy/Zernike |
-| Normalization | ensure \(\iint h=1\) |
+| Normalization | ensure $\\iint h=1$ |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
 
@@ -612,9 +612,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| \(A_{pix}\) | pixel area |
-| \(t_{exp}\) | exposure time |
-| \(QE\) | quantum efficiency |
+| $\A_{pix}$ | pixel area |
+| $\t_{exp}$ | exposure time |
+| $\QE$ | quantum efficiency |
 
 This expression assumes uniform pixel response and wavelength-independent QE unless otherwise extended.
 
@@ -658,7 +658,7 @@ FWC defines the maximum number of electrons the photodiode can hold before satur
 
 ## **6.5 Pixel-Aperture MTF**
 Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function.  
-For a rectangular aperture of width \(p\):
+For a rectangular aperture of width $\p$:
 
 $$
 MTF_{pixel}(f)=|\mathrm{sinc}(\pi f p)|
@@ -681,9 +681,9 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| \(CG\) | conversion gain |
-| \(BL\) | black level |
-| \(2^B-1\) | max DN, the output is clamped to the bit-depth interval |
+| $\CG$ | conversion gain |
+| $\BL$ | black level |
+| $\2^B-1$ | max DN, the output is clamped to the bit-depth interval |
 
 
 ---
@@ -751,8 +751,8 @@ $$
 
 | Term | Meaning |
 |------|---------|
-| \(\sigma_{signal}\) | std of noise-free irradiance |
-| \(\sigma_{noise}\) | std of difference between noisy and clean outputs |
+| $\\sigma_{signal}$ | std of noise-free irradiance |
+| $\\sigma_{noise}$ | std of difference between noisy and clean outputs |
 
 ---
 
@@ -843,7 +843,7 @@ The implemented metrics support several validation procedures:
 | Validation | Method |
 |------------|--------|
 | Gaussian blur | compare MTF to analytic curve |
-| Sensor noise |  compare SNR trends against \( \sigma_{\mathrm{shot}}^2 = N_e \) and \( \sigma_r \). |
+| Sensor noise |  compare SNR trends against $\ \sigma_{\mathrm{shot}}^2 = N_e $ and $\ \sigma_r $. |
 | Pixel MTF | sinc-shape behavior |
 | Sampling | aliasing near Nyquist |
 
