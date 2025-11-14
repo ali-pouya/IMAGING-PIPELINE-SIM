@@ -562,13 +562,12 @@ FWC defines the maximum number of electrons the photodiode can hold before satur
 
 ## **6.5 Pixel-Aperture MTF**
 
-Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function.  
-For a rectangular aperture of width $p$:
+Each pixel integrates irradiance over its finite geometric extent, imposing a pixel-aperture modulation transfer function. For a rectangular aperture of width $p$:
 
 $$\mathrm{MTF}_{\mathrm{pixel}}(f)=|\mathrm{sinc}(\pi f p)|$$
 
 > **Note**  
-> The simulator uses spatial-domain averaging to approximate this, which is equivalent to convolving with a box kernel.
+> The simulator uses spatial-domain averaging, which is equivalent to convolving with a box kernel.
 
 
 ## **6.6 Quantization**
