@@ -21,7 +21,7 @@ NOTES
 -----
 • This is the lightweight “classic” entry point for demonstrations and teaching.
 • The detailed math and references live inside the modules under imaging_pipeline/.
-• For a fuller CLI/test harness, keep a second file (e.g., src/main_full.py).
+• For a fuller CLI/test harness -> src/main_full.py.
 
 © 2023 Ali Pouya — Imaging Pipeline Classic
 """

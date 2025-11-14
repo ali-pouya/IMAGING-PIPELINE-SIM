@@ -29,7 +29,9 @@ REFERENCES (short list)
   (Apertures → OTF/MTF; rectangular integration → sinc)
 • ISO 12233:2017. Electronic still picture imaging — SFR/Resolution.
   (Pixel-aperture considerations in practical MTF)
+  © 2023 Ali Pouya — Imaging Pipeline (classic edition)
 """
+
 
 from __future__ import annotations
 from dataclasses import dataclass
