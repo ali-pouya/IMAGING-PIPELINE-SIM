@@ -95,7 +95,6 @@ Let:
 
 ## **2.2 Mathematical Formulation of the Pipeline**
 
-<br>
 
 $$I_{\mathrm{opt}}(x,y) = (S * h)(x,y)$$
 
@@ -114,11 +113,6 @@ Quantization:
 $$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$$
 
 <br>
-
-> **Note**  
-> All PSFs are explicitly energy-normalized. This ensures irradiance conservation after convolution.
-
-
 
 ## **2.3 Repository Architecture**
 
