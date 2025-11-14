@@ -897,7 +897,7 @@ Distributed under the MIT License.
 <h2 id="author" align="left">👤 Author</h2>
 
 ### **Ali Pouya**  
-Optical Engineer — Optics &amp; Metrology System Design 
+Optical Engineer — Optics &amp; Metrology System Design\
 GitHub: https://github.com/ali-pouya
 
 
