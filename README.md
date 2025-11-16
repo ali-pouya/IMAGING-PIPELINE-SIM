@@ -15,7 +15,7 @@
 - [5. Optics Modeling Theory](#optics-modeling-theory)
 - [6. Sensor Modeling Theory](#sensor-modeling-theory)
 - [7. Metrics and Analysis Theory](#metrics-and-analysis-theory)
-- [8. CLI Usage, Reference Experiments, and Workflows](#cli-usage-reference-experiments-workflows)
+- [8. CLI Usage, Reference Experiments, and Workflows](#reference-use)
 - [9. Extensibility](#extensibility-advanced-development)
 - [Intended Uses](#intended-uses)
 - [License](#license)
@@ -25,10 +25,10 @@
 
 <h1 id="summary" align="center">📘 1. Summary</h1>
 
-The *Imaging Pipeline Simulator* is a physics-grounded, end-to-end model of digital image formation.  
-It was originally built to visualize and compare imaging behavior between two OnSemi CMOS sensors with different sensor parameters—and has since grown into a general-purpose simulation framework.
+The *Imaging Pipeline Simulator* is an end-to-end model of digital image formation.  
+It was originally built to visualize and compare imaging behavior between two OnSemi CMOS sensors with different sensor parameters—and has since grown into a general-purpose simulation toolbox.
 
-At its core, the pipeline models the full transformation chain:
+At its core, the pipeline models the full chain:
 
 **Scene → Optics → Sensor → Sampling → Metrics**
 
@@ -46,8 +46,8 @@ Each stage is represented explicitly, enabling controlled, deterministic experim
 - **Analyze resolution and spectral behavior**  
   through ISO-style slanted-edge MTF, FFT-based falloff, aliasing exposure, and system-MTF composition
 
-The goal is not to mimic camera pipelines from industry OEMs, but to provide a **transparent, mathematically clean, and physically interpretable reference model**.  
-It is designed to understand and visualize **why** an imaging system behaves the way it does—before adding complexity such as color pipelines, demosaicing, tone-mapping, or sharpening.
+The goal is not to mimic camera pipelines from industry OEMs, but to provide a **transparent, mathematical reference model**.  
+This was designed to understand and visualize **why** an imaging system behaves the way it does—before adding complexity such as color pipelines, demosaicing, tone-mapping, or sharpening.
 
 #### **Intended uses include:**
 
@@ -110,7 +110,7 @@ $$N_e^{\mathrm{noisy}} = N_e^{\prime} + \mathcal{N}(0, \sigma_r^2)$$
 
 Quantization:
 
-$$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$$
+$$DN = \mathrm{clip}\left(\left\lfloor \frac{N_e^{\mathrm{noisy}}}{CG} \right\rceil + BL,\ 0,\ 2^B - 1\right)$$
 
 <br>
 
@@ -798,56 +798,14 @@ The implemented metrics support several validation procedures:
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<h1 id="cli-usage-reference-experiments-workflows" align="center">⚙️ 8. CLI Usage, Reference Experiments, and Workflows</h1>
+<h1 id="reference-use" align="center">⚙️ 8. Reference Use </h1>
 
-## **8.1 CLI Overview**
-
-```bash
-python src/main.py
-```
-
-
-## **8.2 CLI Parameters**
-
-### **Scene Selection**
-
-```bash
---scene slanted_edge
---scene barcode
---scene gradient
---scene siemens_star
---scene checker
-```
-
-### **Core Parameters Table**
-
-| Flag | Description |
-|------|-------------|
-| `--size` | scene dimension |
-| `--sigma` | Gaussian PSF std (px) |
-| `--bit_depth` | ADC bit depth |
-| `--outdir` | output directory |
-
-
-## **8.3 Example Execution**
+## **8.1 Reference Examples**
 
 ```bash
 python src/main.py --scene siemens_star --size 512 --sigma 1.2 --bit_depth 12 --outdir outputs
 ```
 
-
-## **8.4 Output Structure**
-
-| File | Contents |
-|-------|----------|
-| `pipeline_overview.png` | montage of scene/optics/sensor |
-| `scene.npy` | ideal irradiance |
-| `after_optics.npy` | blurred irradiance |
-| `sensor_electrons.npy` | electrons |
-| `sensor_dn.npy` | quantized DN |
-
-
-## **8.5 Reference Experiments**
 
 ### **Resolution baseline**
 
@@ -873,24 +831,15 @@ python src/main.py --scene checker --bit_depth 10 --sigma 0.5
 python src/main.py --scene slanted_edge --sigma 0.7
 ```
 
+## **8.2 Output Structure**
 
-## **8.6 Regression Testing**
-
-| Step | Action |
-|-------|--------|
-| 1 | generate baseline outputs |
-| 2 | rerun pipeline |
-| 3 | compare SNR, histogram, MTF curves |
-
-
-## **8.7 Batch Experimentation**
-
-| Sweep | Command |
-|--------|---------|
-| Sigma sweep | `for sigma in [...] python src/main.py --scene siemens_star ...` |
-| Bit-depth sweep | `for b in [...] python src/main.py --scene checker ...` |
-| Multi-scene | `for s in [...] python src/main.py --scene $s` |
-
+| File | Contents |
+|-------|----------|
+| `pipeline_overview.png` | montage of scene/optics/sensor |
+| `scene.npy` | ideal irradiance |
+| `after_optics.npy` | blurred irradiance |
+| `sensor_electrons.npy` | electrons |
+| `sensor_dn.npy` | quantized DN |
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
