@@ -3,8 +3,7 @@ imaging_pipeline — classic edition
 ================================================
 Modified Original, Lightweight, end-to-end imaging pipeline organized as:
     scenes → optics → sensor → utils (metrics)
-Each subpackage contains well-documented, modular code suitable for both
-learning and experimentation.
+Each subpackage contains well-documented, modular code suitable for experimentation.
 
-© 2025 Ali Pouya — Imaging Pipeline Classic
+© 2023 Ali Pouya — Imaging Pipeline Classic
 """

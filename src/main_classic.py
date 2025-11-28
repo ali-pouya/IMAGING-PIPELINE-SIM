@@ -12,16 +12,16 @@ WHAT THIS FILE DOES
 4) Shows a 3-panel figure: Scene | After Optics | Sensor DN
 5) Saves the figure and key arrays to ./outputs/
 
-USAGE (run from repo root)
+USAGE (note: run from repo root)
 --------------------------
   python -m src.main_classic
   python -m src.main_classic --scene siemens_star --size 512 --sigma 0.8 --bit_depth 12
 
 NOTES
 -----
-• This is the lightweight “classic” entry point for demonstrations and teaching.
-• The detailed math and references live inside the modules under imaging_pipeline/.
-• For a fuller CLI/test harness, keep a second file (e.g., src/main_full.py).
+• This is the lightweight “classic” entry point for demonstrations.
+• I have put the detailed math and references live inside the modules under imaging_pipeline/.
+• For a fuller CLI/test harness, keeping a second file (e.g., src/main_full.py).
 
 © 2023 Ali Pouya — Imaging Pipeline Classic
 """

@@ -28,7 +28,7 @@ NOTES ON SIMPLIFICATIONS
 EXTENDING LATER
 ---------------
 • Add other PSFs (defocus disk, astigmatism, coma kernels, etc.) and expose a
-  --model switch. Keep this file light; put math in the modules.
+  --model switch.
 
   © 2023 Ali Pouya — Imaging Pipeline Classic
 """
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     run_once(args.scene, args.size, args.sigma, args.bit_depth)
 
 
-#Siemens Star — Nominal Diffraction-Limited Case
+#----Siemens Star — Nominal Diffraction-Limited Case
 #python main.py --scene siemens --size 512 --bit_depth 12 --sigma 0.6
 #→ Verifies circular symmetry and MTF falloff at high frequency.
 
