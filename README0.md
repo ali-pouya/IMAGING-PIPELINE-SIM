@@ -15,7 +15,7 @@
 - [5. Optics Modeling Theory](#optics-modeling-theory)
 - [6. Sensor Modeling Theory](#sensor-modeling-theory)
 - [7. Metrics and Analysis Theory](#metrics-and-analysis-theory)
-- [8. CLI Usage, Reference Experiments, and Workflows](#reference-use)
+- [8. CLI Usage, Reference Experiments, and Workflows](#cli-usage-reference-experiments-workflows)
 - [9. Extensibility](#extensibility-advanced-development)
 - [Intended Uses](#intended-uses)
 - [License](#license)
@@ -25,36 +25,44 @@
 
 <h1 id="summary" align="center">📘 1. Summary</h1>
 
-The *Imaging Pipeline Simulator* is an end-to-end model of digital image formation. This was originally built to visualize and compare imaging behavior between two OnSemi CMOS sensors with different sensor parameters—and has since grown into a general-purpose simulation toolbox.
+The *Imaging Pipeline Simulator* is a physics-grounded model of digital image formation.  
+It was originally written to visualize imaging differences between two OnSemi CMOS sensors with different formats and pixel sizes, and is now structured as a general-purpose pipeline for comparing lenses, sensors, and processing assumptions.
 
-At its core, the pipeline models the full chain:
+The simulator treats the scene as an **ideal, blur-free, noise-free irradiance distribution** defined on the sensor plane, then propagates it through:
 
-**Scene → Optics → Sensor → Sampling → Metrics**
+- energy-normalized PSF convolution (optics)  
+- photon-limited electron generation (sensor)  
+- Poisson + Gaussian noise processes  
+- pixel-aperture integration and sampling  
+- quantization and metric extraction  
 
-Each stage is represented explicitly, enabling controlled, deterministic experiments where every contributing factor (blur, noise, pixel geometry, quantization, and sampling) can be isolated and studied independently. This simulator provides an environment where you can:
+The imaging chain is:
 
-- **Trace irradiance formation with full physical transparency**  
-  (ideal scenes, continuous irradiance, energy-normalized PSFs)
+**Scene → Optics → Sensor → Metrics**
 
-- **Model optical degradation using interpretable PSFs**  
-  Gaussian as a baseline, with extension paths to Airy, defocus, and Zernike-derived aberrations
+and provides a controlled environment for studying:
 
-- **Simulate realistic sensor physics**  
-  photon statistics, shot noise, read noise, pixel-aperture MTF, full-well behavior, conversion gain, and quantization
+- Formation and transformation of irradiance distributions  
+- Point-spread–based optical degradation and MTF loss  
+- Sensor-level electron statistics and noise propagation  
+- Digital sampling, quantization, and pixel-aperture effects  
+- Spatial-resolution behavior expressed via PSF–LSF–ESF–MTF relationships  
 
-- **Analyze resolution and spectral behavior**  
-  through ISO-style slanted-edge MTF, FFT-based falloff, aliasing exposure, and system-MTF composition
+Typical uses include:
 
-The goal is not to mimic camera pipelines from industry OEMs, but to provide a **transparent, mathematical reference model**.  
-This was designed to understand and visualize **why** an imaging system behaves the way it does—before adding complexity such as color pipelines, demosaicing, tone-mapping, or sharpening.
+- comparing sensor formats / pixel sizes under identical optics  
+- exploring blur vs. noise vs. bit-depth trade-offs  
+- validating slanted-edge MTF implementations against analytic ground truth  
+- teaching image-formation concepts with fully deterministic synthetic data  
 
-#### **Intended uses include:**
+The implementation emphasizes:
 
-- comparing imaging with different sensors  
-- studying spatial-resolution limits under controlled blur  
-- testing aliasing behavior  
-- validating algorithms against known ground truth  
-- visualizing image-formation physics  
+- **Deterministic synthetic data generation**  
+- **Energy-normalized, pixel-domain PSF convolution**  
+- **Gaussian blur as a baseline optical surrogate**, with extension pathways to Zernike-derived aberrated PSFs  
+- **Physically grounded sensor modeling**, including photon statistics, shot noise, read noise, pixel MTF, full-well limits, conversion gain, and ADC quantization  
+- **Frequency-domain and edge-based resolution analysis**, including ISO-style slanted-edge MTF estimation and FFT-based spectral metrics  
+
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
@@ -66,13 +74,11 @@ The process is organized into **four conceptual subsystems**:
 
 ### **Scene → Optics → Sensor → Metrics**
 </div>
-Each subsystem operates on well-defined physical quantities.
+Each subsystem operates on well-defined physical quantities.The design promotes traceability from theoretical models to numerical implementation.
 
 
 
 ## **2.1 High-Level Data Flow**
-
-<div align="center">
 
 ```text
 ┌────────────────┐   ┌──────────────────────┐   ┌─────────────────────────┐   ┌───────────────────┐
@@ -80,8 +86,6 @@ Each subsystem operates on well-defined physical quantities.
 │(irradiance map)│   │ (PSF convolution: h) │   │ (electrons → DN output) │   │(SNR, MTF, spectra)│
 └────────────────┘   └──────────────────────┘   └─────────────────────────┘   └───────────────────┘
 ```
-
-</div>
 
 Let:
 
@@ -94,6 +98,7 @@ Let:
 
 ## **2.2 Mathematical Formulation of the Pipeline**
 
+<br>
 
 $$I_{\mathrm{opt}}(x,y) = (S * h)(x,y)$$
 
@@ -109,9 +114,14 @@ $$N_e^{\mathrm{noisy}} = N_e^{\prime} + \mathcal{N}(0, \sigma_r^2)$$
 
 Quantization:
 
-$$DN = \mathrm{clip}\left(\left\lfloor \frac{N_e^{\mathrm{noisy}}}{CG} \right\rceil + BL,\ 0,\ 2^B - 1\right)$$
+$$DN =\mathrm{clip}\!\left(\left\lfloor\frac{N_e^{\mathrm{noisy}}}{CG}\right\rceil+ BL,\ 0,\ 2^B - 1\right)$$
 
 <br>
+
+> **Note**  
+> All PSFs are explicitly energy-normalized. This ensures irradiance conservation after convolution.
+
+
 
 ## **2.3 Repository Architecture**
 
@@ -119,7 +129,7 @@ $$DN = \mathrm{clip}\left(\left\lfloor \frac{N_e^{\mathrm{noisy}}}{CG} \right\rc
 src/
 │
 ├── main.py                 # Primary pipeline demonstration
-├── main_classic.py         # Minimal version
+├── main_classic.py         # Minimal teaching version
 ├── main_full.py            # Batch/testing version
 │
 └── imaging_pipeline/
@@ -178,7 +188,8 @@ Operations:
 
 Simplifies:
 
-- core pipeline   
+- core pipeline  
+- no batch mode  
 - minimal parameters  
 
 
@@ -266,15 +277,6 @@ Analytic scenes provide controlled spatial frequencies and deterministic reprodu
 | Deterministic behavior | Same inputs → same outputs |
 | Convolution compatibility | Sharp edges, periodic patterns, ramps |
 | Alignment with test targets | Siemens star, ISO edge, checkerboard, barcode |
-
-**Scene irradiance interpretation**
-
-In this simulator, $S(x,y)$ is defined as the **ideal, blur-free, noise-free, distortion-free irradiance** at the sensor plane.  
-
-Physically, it corresponds to the image that would be formed if the optics were perfect (no aberrations, diffraction, or defocus) and the sensor introduced no noise or quantization.  
-
-This separation makes it possible to attribute all subsequent resolution loss and noise strictly to the optics, sensor, and sampling chain.
-
 
 
 ## **4.2 Scene Types and Definitions**
@@ -398,49 +400,11 @@ Optical effects are simulated via convolution with a point spread function (PSF)
 
 $$I_{\mathrm{opt}}(x,y) = (S * h)(x,y)$$
 
-**Linear, shift-invariant assumption**
-
-The optics are modeled as a linear, shift-invariant (LSI) system over the simulated field. This implies that:
-
-- blur behaves the same at every location in the image, and  
-- the effect of the lens can be written as the **superposition of many blurred points**.
-
-This approximation is not exact for wide-angle, strongly off-axis, or heavily aberrated systems, but it is accurate for **small fields of view** and **center-of-field synthetic experiments**, and is standard practice in image-formation modeling.
-
-**Physical contributors to PSF shape**
-
-In real imaging systems, the PSF aggregates multiple physical effects, including:
-
-- diffraction from the finite aperture  
-- defocus and circle-of-confusion blur  
-- low- and high-order aberrations (spherical, coma, astigmatism, trefoil, etc.)  
-- manufacturing tolerances and alignment errors  
-- sensor microlenses and cover glass  
-- wavelength-dependent behavior and chromatic dispersion  
-- motion blur, which can be treated as a temporal PSF
-
 | Principle | Meaning |
 |-----------|---------|
 | Linear shift-invariant | constant PSF across field |
 | Energy normalized | $\iint h(x,y)\,dx\,dy = 1$ |
 | Spatial convolution | avoids FFT wrap-around artifacts |
-
-**Why PSFs must be energy-normalized**
-
-If the PSF is not normalized to unit integral, convolution will artificially brighten or darken the image.  
-Non-unit-energy PSFs introduce:
-
-- exposure drift when changing blur parameters,  
-- brightness inconsistency between experiments, and  
-- unphysical gain or loss of radiant energy.
-
-Enforcing
-
-$$
-\iint h(x,y)\,dx\,dy = 1
-$$
-
-ensures irradiance conservation and keeps comparisons between different blur models physically meaningful.
 
 
 ## **5.2 Gaussian PSF (Implemented Model)**
@@ -461,14 +425,6 @@ The corresponding modulation transfer function is:
 
 $$\mathrm{MTF}_{\mathrm{gauss}}(f)=\exp\!\left( -2(\pi\sigma f)^2 \right)$$
 
-A useful rule of thumb links the Gaussian width $\sigma$ (in pixels) to the spatial frequency at which contrast drops to 50% (MTF50):
-
-$$
-f_{50} \approx \frac{0.32}{\sigma} \quad [\text{cycles per pixel}]
-$$
-
-Smaller $\sigma$ values correspond to sharper imagery (higher MTF50), while larger $\sigma$ values model increased blur.
-
 | Property | Meaning |
 |----------|---------|
 | Closed-form MTF | easy validation |
@@ -476,7 +432,7 @@ Smaller $\sigma$ values correspond to sharper imagery (higher MTF50), while larg
 | Controlled blur strength | via $\sigma$ |
 
 
-## **5.3 Defocus PSF (Circle of Confusion) **
+## **5.3 Defocus PSF (Circle of Confusion) — Extensible**
 
 Geometric defocus produces a uniformly illuminated disk:
 
@@ -497,7 +453,7 @@ $$\mathrm{MTF}_{\mathrm{defocus}}(\nu)=\dfrac{2}{\pi}\left[\arccos(\nu)-\nu\sqrt
 with $\nu = f / f_{\mathrm{cutoff}}$.
 
 
-## **5.4 Airy PSF (Diffraction-Limited)**
+## **5.4 Airy PSF (Diffraction-Limited) — Extensible**
 
 For a circular aperture, diffraction produces an Airy pattern:
 
@@ -561,22 +517,6 @@ where the weighting function reflects illumination spectrum and sensor quantum e
 | Normalization | $\iint h=1$ |
 | Convolution | spatial-domain |
 | Optional PSF export | for diagnostics |
-
-## **5.8 Handling Undersampled PSFs**
-
-When the PSF is significantly narrower than the pixel pitch (for example, Gaussian blur with $\sigma \lesssim 0.5$ pixels), a naïve convolution on the sensor grid becomes numerically unreliable:
-
-- the ESF becomes quantized rather than smooth,  
-- the corresponding LSF develops spiky structure, and  
-- the recovered MTF can exhibit aliasing or over-optimistic resolution.
-
-To preserve the correct sampling order, the simulator uses an **upsample → blur → downsample** strategy in these regimes:
-
-1. upsample the irradiance to a finer grid,  
-2. apply the continuous-space PSF blur on the fine grid, then  
-3. downsample back to the sensor pixel pitch.
-
-This mirrors the physical process (continuous blur followed by discrete sampling) and yields stable, physically meaningful MTF estimates even when the optical blur is tighter than one pixel.
 
 
 
@@ -798,14 +738,56 @@ The implemented metrics support several validation procedures:
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<h1 id="reference-use" align="center">⚙️ 8. Reference Use </h1>
+<h1 id="cli-usage-reference-experiments-workflows" align="center">⚙️ 8. CLI Usage, Reference Experiments, and Workflows</h1>
 
-## **8.1 Reference Examples**
+## **8.1 CLI Overview**
+
+```bash
+python src/main.py
+```
+
+
+## **8.2 CLI Parameters**
+
+### **Scene Selection**
+
+```bash
+--scene slanted_edge
+--scene barcode
+--scene gradient
+--scene siemens_star
+--scene checker
+```
+
+### **Core Parameters Table**
+
+| Flag | Description |
+|------|-------------|
+| `--size` | scene dimension |
+| `--sigma` | Gaussian PSF std (px) |
+| `--bit_depth` | ADC bit depth |
+| `--outdir` | output directory |
+
+
+## **8.3 Example Execution**
 
 ```bash
 python src/main.py --scene siemens_star --size 512 --sigma 1.2 --bit_depth 12 --outdir outputs
 ```
 
+
+## **8.4 Output Structure**
+
+| File | Contents |
+|-------|----------|
+| `pipeline_overview.png` | montage of scene/optics/sensor |
+| `scene.npy` | ideal irradiance |
+| `after_optics.npy` | blurred irradiance |
+| `sensor_electrons.npy` | electrons |
+| `sensor_dn.npy` | quantized DN |
+
+
+## **8.5 Reference Experiments**
 
 ### **Resolution baseline**
 
@@ -831,19 +813,28 @@ python src/main.py --scene checker --bit_depth 10 --sigma 0.5
 python src/main.py --scene slanted_edge --sigma 0.7
 ```
 
-## **8.2 Output Structure**
 
-| File | Contents |
-|-------|----------|
-| `pipeline_overview.png` | montage of scene/optics/sensor |
-| `scene.npy` | ideal irradiance |
-| `after_optics.npy` | blurred irradiance |
-| `sensor_electrons.npy` | electrons |
-| `sensor_dn.npy` | quantized DN |
+## **8.6 Regression Testing**
+
+| Step | Action |
+|-------|--------|
+| 1 | generate baseline outputs |
+| 2 | rerun pipeline |
+| 3 | compare SNR, histogram, MTF curves |
+
+
+## **8.7 Batch Experimentation**
+
+| Sweep | Command |
+|--------|---------|
+| Sigma sweep | `for sigma in [...] python src/main.py --scene siemens_star ...` |
+| Bit-depth sweep | `for b in [...] python src/main.py --scene checker ...` |
+| Multi-scene | `for s in [...] python src/main.py --scene $s` |
+
 
 <hr style="border:0.5px solid #ccc; margin:30px 0;">
 
-<h1 id="extensibility-advanced-development" align="center">🚀 9. Extensions </h1>
+<h1 id="extensibility-advanced-development" align="center">🚀 9. Extensibility and Advanced Development</h1>
 
 ## **9.1 Extensible Components**
 
